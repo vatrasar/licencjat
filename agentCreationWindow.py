@@ -7,9 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from settings import AgentSettings
 
 class AgentCreationWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, settings_agent: AgentSettings):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(440, 135)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -40,7 +41,10 @@ class AgentCreationWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+
         self.retranslateUi(MainWindow)
+        new_index = self.algorithm_slection.findText(settings_agent.algorithm, QtCore.Qt.MatchExactly)
+        self.algorithm_slection.setCurrentIndex(new_index)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
