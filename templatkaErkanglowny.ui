@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main_window</class>
+ <widget class="QMainWindow" name="main_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Środowisko do testów algrytmow uczenia ze wzmocnieniem</string>
+  </property>
+  <property name="toolTipDuration">
+   <number>-2</number>
+  </property>
+  <widget class="QWidget" name="plot">
+   <property name="toolTipDuration">
+    <number>5</number>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QWidget" name="graph" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_agent">
+    <property name="title">
+     <string>Agent</string>
+    </property>
+    <addaction name="action_load_agent"/>
+    <addaction name="action_create_agent"/>
+    <addaction name="action_agent_edit"/>
+    <addaction name="action_agent_save"/>
+   </widget>
+   <widget class="QMenu" name="menu_environment">
+    <property name="title">
+     <string>Gry</string>
+    </property>
+    <addaction name="action_cartpole_prestart"/>
+    <addaction name="action_pong_prestart"/>
+    <addaction name="action_Sonic_the_hedgehog_prestart"/>
+   </widget>
+   <widget class="QMenu" name="menu_start">
+    <property name="title">
+     <string>Uruchom</string>
+    </property>
+    <addaction name="action_test_settings_open"/>
+    <addaction name="action_learn_settings_open"/>
+   </widget>
+   <widget class="QMenu" name="menu_graph">
+    <property name="title">
+     <string>Wykres</string>
+    </property>
+    <addaction name="action_save_graph"/>
+   </widget>
+   <addaction name="menu_agent"/>
+   <addaction name="menu_environment"/>
+   <addaction name="menu_start"/>
+   <addaction name="menu_graph"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_load_agent">
+   <property name="text">
+    <string>Wczytaj</string>
+   </property>
+  </action>
+  <action name="action_create_agent">
+   <property name="text">
+    <string>Stwórz</string>
+   </property>
+  </action>
+  <action name="action_agent_edit">
+   <property name="text">
+    <string>Edytuj</string>
+   </property>
+  </action>
+  <action name="actionGry">
+   <property name="text">
+    <string>Gry</string>
+   </property>
+  </action>
+  <action name="action_test_settings_open">
+   <property name="text">
+    <string>Testy</string>
+   </property>
+  </action>
+  <action name="action_learn_settings_open">
+   <property name="text">
+    <string>Nauka</string>
+   </property>
+  </action>
+  <action name="action_agent_save">
+   <property name="text">
+    <string>Zapisz</string>
+   </property>
+  </action>
+  <action name="action_cartpole_prestart">
+   <property name="text">
+    <string>Cartpole</string>
+   </property>
+  </action>
+  <action name="action_pong_prestart">
+   <property name="text">
+    <string>Pong</string>
+   </property>
+  </action>
+  <action name="action_Sonic_the_hedgehog_prestart">
+   <property name="text">
+    <string>Sonic the hedgehog</string>
+   </property>
+  </action>
+  <action name="action_save_graph">
+   <property name="text">
+    <string>Zapisz</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
