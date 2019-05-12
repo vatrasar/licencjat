@@ -2,15 +2,24 @@ from settings import *
 import gym
 from AgentDQN import DQNAgent
 import numpy as np
-import pylab
 from PyQt5.QtCore import QThread
-import sys
+from PyQt5.QtCore import pyqtSignal
+from statistics import Statistics
 
 class Play(QThread):
 
-    def __init__(self,settigns:Settings):
+
+    signal_plot = pyqtSignal()
+    def __init__(self, settigns:Settings):
         QThread.__init__(self)
         self.settigns=settigns
+        self.statistics=Statistics(settigns.game_settings.episodes_batch_size,self.signal_plot)
+
+
+    def __del__(self):
+        self.wait()
+
+
 
     def run(self):
 
@@ -22,7 +31,7 @@ class Play(QThread):
 
         agent = DQNAgent(state_size, action_size)
 
-        scores, episodes = [], []
+
 
         for e in range(self.settigns.game_settings.max_episodes):
             done = False
@@ -54,14 +63,9 @@ class Play(QThread):
 
                     # every episode, plot the play time
                     score = score if score == 500 else score + 100
-                    scores.append(score)
-                    episodes.append(e)
-                    pylab.plot(episodes, scores, 'b')
-                    pylab.savefig("./cartpole_dqn.png")
-                    print("episode:", e, "  score:", score, "  memory length:",
-                          len(agent.memory), "  epsilon:", agent.epsilon)
+                    self.statistics.append_score(score)
 
-                    # if the mean of scores of last 10 episode is bigger than 490
-                    # stop training
-                    if np.mean(scores[-min(10, len(scores)):]) > 490:
-                        sys.exit()
+
+
+
+

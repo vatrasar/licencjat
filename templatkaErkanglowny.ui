@@ -21,8 +21,12 @@
     <number>5</number>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QWidget" name="graph" native="true"/>
+    <item row="0" column="0">
+     <widget class="QLabel" name="curve_view">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

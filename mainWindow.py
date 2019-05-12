@@ -18,9 +18,9 @@ class Ui_main_window(object):
         self.plot.setObjectName("plot")
         self.gridLayout = QtWidgets.QGridLayout(self.plot)
         self.gridLayout.setObjectName("gridLayout")
-        self.graph = QtWidgets.QWidget(self.plot)
-        self.graph.setObjectName("graph")
-        self.gridLayout.addWidget(self.graph, 0, 1, 1, 1)
+        self.curve_view = QtWidgets.QLabel(self.plot)
+        self.curve_view.setObjectName("curve_view")
+        self.gridLayout.addWidget(self.curve_view, 0, 0, 1, 1)
         main_window.setCentralWidget(self.plot)
         self.menubar = QtWidgets.QMenuBar(main_window)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -80,6 +80,7 @@ class Ui_main_window(object):
     def retranslateUi(self, main_window):
         _translate = QtCore.QCoreApplication.translate
         main_window.setWindowTitle(_translate("main_window", "Środowisko do testów algrytmow uczenia ze wzmocnieniem"))
+        self.curve_view.setText(_translate("main_window", "TextLabel"))
         self.menu_agent.setTitle(_translate("main_window", "Agent"))
         self.menu_environment.setTitle(_translate("main_window", "Gry"))
         self.menu_start.setTitle(_translate("main_window", "Uruchom"))

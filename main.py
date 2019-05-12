@@ -1,5 +1,6 @@
-
+from statistics import Statistics
 from PyQt5 import QtWidgets,QtCore
+from PyQt5.QtGui import QIcon, QPixmap
 import sys
 from PyQt5.QtWidgets import QApplication,QDialog,QLabel
 from mainWindow import Ui_main_window
@@ -11,6 +12,7 @@ import play
 class Gui:
     def __init__(self, window, settings: Settings):
         self.ui = Ui_main_window()
+        self.main_window=window
         self.ui.setupUi(window)
         self.add_actions()
         self.settigns=settigns
@@ -28,10 +30,19 @@ class Gui:
         self.learning_ui.confirm_box.rejected.connect(self.reject_start_learning)
         self.learning_window.show()
 
+    def plot(self):
+        pixmap = QPixmap('new_curve.png')
+        self.ui.curve_view.setPixmap(pixmap)
+        self.main_window.repaint()
 
     def accept_start_learning(self):
+
         self.game=play.Play(self.settigns)
+        self.game.statistics.signal_plot.connect(self.plot)
         self.game.start()
+
+        self.learning_window.close()
+
 
 
     def reject_start_learning(self):
@@ -61,4 +72,5 @@ if __name__ == "__main__":
     gui=Gui(window,settigns)
     b=gui.ui.menubar.actions()
     window.show()
+
     sys.exit(app.exec_())
