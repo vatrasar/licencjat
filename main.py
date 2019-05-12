@@ -16,8 +16,19 @@ class Gui:
 
     def add_actions(self):
         self.ui.action_create_agent.triggered.connect(self.open_agent_creation_window)
+        self.ui.action_learn_settings_open.triggered.connect(self.open_learning_settings_window)
 
-    def open_agent_creation_window(self):
+
+    def open_learning_settings_window(self):
+        self.agent_creation_window = QtWidgets.QMainWindow()
+        self.agent_creation_ui = AgentCreationWindow()
+        self.agent_creation_ui.setupUi(self.agent_creation_window, self.settigns.agent_settings)
+        self.agent_creation_ui.confirm_box.accepted.connect(self.accept_new_agent_settings)
+        self.agent_creation_ui.confirm_box.rejected.connect(self.reject_new_agent_settings)
+        self.agent_creation_window.show()
+
+
+def open_agent_creation_window(self):
 
         self.agent_creation_window = QtWidgets.QMainWindow()
         self.agent_creation_ui = AgentCreationWindow()
