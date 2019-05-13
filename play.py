@@ -11,6 +11,7 @@ class Play(QThread):
 
     signal_plot = pyqtSignal()
     signal_episode = pyqtSignal("int")
+    signal_done=pyqtSignal("int","int")
     def __init__(self, settigns:Settings):
         QThread.__init__(self)
         self.settigns=settigns
@@ -31,7 +32,7 @@ class Play(QThread):
         action_size = env.action_space.n
 
         agent = DQNAgent(state_size, action_size,self.settigns.agent_settings)
-
+        done_signal_emited=False
 
 
         for e in range(self.settigns.game_settings.max_episodes):
@@ -66,8 +67,12 @@ class Play(QThread):
                     score = score if score == 500 else score + 100
                     self.statistics.append_score(score)
             if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy:
+                self.signal_done.emit(
+                    e+1, self.statistics.get_current_mean_score())
+                done_signal_emited=True
                 break
-
+        if not(done_signal_emited):
+            self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
 
 
 
