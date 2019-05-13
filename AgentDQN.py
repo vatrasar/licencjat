@@ -4,11 +4,12 @@ from collections import deque
 from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
+from settings import AgentSettings
 
 
 
 class DQNAgent:
-    def __init__(self, state_size, action_size):
+    def __init__(self, state_size, action_size, agent_settings: AgentSettings):
         # if you want to see Cartpole learning, then change to True
         self.render = False
         self.load_model = False
@@ -18,15 +19,15 @@ class DQNAgent:
         self.action_size = action_size
 
         # These are hyper parameters for the DQN
-        self.discount_factor = 0.99
-        self.learning_rate = 0.001
-        self.epsilon = 1.0
-        self.epsilon_decay = 0.999
-        self.epsilon_min = 0.01
-        self.batch_size = 64
+        self.discount_factor = agent_settings.gamma
+        self.learning_rate = agent_settings.learning_rate
+        self.epsilon = agent_settings.start_exploration_value
+        self.epsilon_decay = agent_settings.exploration_decay
+        self.epsilon_min = agent_settings.mnimal_exploration
+        self.batch_size = agent_settings.mini_batch
         self.train_start = 1000
         # create replay memory using deque
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=agent_settings.replay_size)
 
         # create main model and target model
         self.model = self.build_model()

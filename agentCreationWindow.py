@@ -12,7 +12,7 @@ from settings import AgentSettings
 class AgentCreationWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(520, 135)
+        MainWindow.resize(520, 161)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -41,6 +41,9 @@ class AgentCreationWindow(object):
         self.gmma_spin.setObjectName("gmma_spin")
         self.gridLayout.addWidget(self.gmma_spin, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
+        self.default_settings = QtWidgets.QPushButton(self.centralwidget)
+        self.default_settings.setObjectName("default_settings")
+        self.verticalLayout.addWidget(self.default_settings)
         self.confirm_box = QtWidgets.QDialogButtonBox(self.centralwidget)
         self.confirm_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.confirm_box.setCenterButtons(True)
@@ -64,6 +67,5 @@ class AgentCreationWindow(object):
         self.algorithm_slection.setItemText(3, _translate("MainWindow", "Advantage Actor Critic"))
         self.algorithm_slection.setItemText(4, _translate("MainWindow", "Proximal Policy Optimization"))
         self.label.setText(_translate("MainWindow", "Współczynnnik dyskontowania nagrody"))
-
-
+        self.default_settings.setText(_translate("MainWindow", "Ustawinia domyślne dla algorytmu"))
 

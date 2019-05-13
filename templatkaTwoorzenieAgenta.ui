@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>520</width>
-    <height>135</height>
+    <height>161</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,6 +77,13 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="default_settings">
+      <property name="text">
+       <string>Ustawinia domyślne dla algorytmu</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QDialogButtonBox" name="confirm_box">

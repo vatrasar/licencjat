@@ -60,6 +60,8 @@ class Gui:
         self.set_current_values_in_agent_creation_form()
         self.agent_creation_ui.confirm_box.accepted.connect(self.accept_new_agent_settings)
         self.agent_creation_ui.confirm_box.rejected.connect(self.reject_new_agent_settings)
+        self.agent_creation_ui.default_settings.clicked.connect(self.set_default_agent_details)
+
         self.agent_creation_window.show()
 
     def set_current_values_in_agent_creation_form(self):
@@ -82,7 +84,7 @@ class Gui:
 
     def set_current_values_in_details_windows(self):
         self.agent_details_ui.replay_size_spin.setValue(self.settigns.agent_settings.replay_size)
-        self.agent_details_ui.mini_batch_size.setValue(self.settigns.agent_settings.mini_batch)
+        self.agent_details_ui.mini_batch_size_zpin.setValue(self.settigns.agent_settings.mini_batch)
         self.agent_details_ui.exploration_decay_spin.setValue(self.settigns.agent_settings.exploration_decay)
         self.agent_details_ui.start_exploration_spin.setValue(self.settigns.agent_settings.start_exploration_value)
         self.agent_details_ui.learning_rate_spin.setValue(self.settigns.agent_settings.learning_rate)
@@ -90,7 +92,7 @@ class Gui:
 
     def accept_new_agent_details_settings(self):
         self.settigns.agent_settings.replay_size=self.agent_details_ui.replay_size_spin.value()
-        self.settigns.agent_settings.mini_batch=self.agent_details_ui.mini_batch_size.value()
+        self.settigns.agent_settings.mini_batch=self.agent_details_ui.mini_batch_size_zpin.value()
         self.settigns.agent_settings.exploration_decay=self.agent_details_ui.exploration_decay_spin.value()
         self.settigns.agent_settings.start_exploration_value=self.agent_details_ui.start_exploration_spin.value()
         self.settigns.agent_settings.learning_rate=self.agent_details_ui.learning_rate_spin.value()
@@ -100,6 +102,14 @@ class Gui:
     def reject_new_agent_details_settings(self):
         self.agent_details_window.close()
 
+    def set_default_agent_details(self):
+        if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
+            self.settigns.agent_settings.set_dqn_default()
+            if not(self.agent_creation_window.isVisible()):
+                self.set_current_values_in_details_windows()
+            else:
+                self.set_current_values_in_agent_creation_form()
+
     def open_dqn_details_windows(self):
         self.agent_details_window= QtWidgets.QMainWindow()
         self.agent_details_ui =agentDqnDetailsWindow.Ui_MainWindow()
@@ -107,10 +117,11 @@ class Gui:
 
         self.agent_details_ui.buttonBox.accepted.connect(self.accept_new_agent_details_settings)
         self.agent_details_ui.buttonBox.rejected.connect(self.reject_new_agent_details_settings)
+        self.agent_details_ui.default_settings_button.clicked.connect(self.set_default_agent_details)
+
+
         self.set_current_values_in_details_windows()
         self.agent_details_window.show()
-
-
 
 
 
