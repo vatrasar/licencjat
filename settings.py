@@ -1,6 +1,13 @@
 class AgentSettings():
     def __init__(self,algorithm):
         self.algorithm = algorithm
+        self.gamma=0.1
+        self.replay_size =2000
+        self.mini_batch = 200
+        self.exploration_decay =0.01
+        self.start_exploration_value =0.99
+        self.learning_rate = 0.1
+        self.mnimal_exploration = 0.01
 
 
 class GameSettings():

@@ -43,14 +43,14 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Zatrzymaj po osiągnieciu dokładności</string>
+         <string>Zatrzymaj gdy średniu wynik</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QSpinBox" name="stop_accuracy">
         <property name="suffix">
-         <string>%</string>
+         <string> pkt</string>
         </property>
         <property name="maximum">
          <number>100</number>

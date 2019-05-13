@@ -8,6 +8,16 @@
 import pylab
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'templatkaUruchamianieui.ui'
+#
+# Created by: PyQt5 UI code generator 5.10.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 class LearningWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -32,7 +42,7 @@ class LearningWindow(object):
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.stop_accuracy = QtWidgets.QSpinBox(self.centralwidget)
-        self.stop_accuracy.setMaximum(100)
+        self.stop_accuracy.setMaximum(30000000)
         self.stop_accuracy.setObjectName("stop_accuracy")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.stop_accuracy)
         self.verticalLayout.addLayout(self.formLayout)
@@ -52,6 +62,8 @@ class LearningWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Ustawienia treningu"))
         self.label.setText(_translate("MainWindow", "Liczba epizdow"))
-        self.label_2.setText(_translate("MainWindow", "Zatrzymaj po osiągnieciu dokładności"))
-        self.stop_accuracy.setSuffix(_translate("MainWindow", "%"))
+        self.label_2.setText(_translate("MainWindow", "Zatrzymaj gdy średniu wynik"))
+        self.stop_accuracy.setSuffix(_translate("MainWindow", " pkt"))
+
+
 

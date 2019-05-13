@@ -64,7 +64,8 @@ class Play(QThread):
                     # every episode, plot the play time
                     score = score if score == 500 else score + 100
                     self.statistics.append_score(score)
-
+            if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy:
+                break
 
 
 

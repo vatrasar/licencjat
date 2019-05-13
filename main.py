@@ -8,6 +8,7 @@ from agentCreationWindow import AgentCreationWindow
 from settings import Settings
 from learningWindow import LearningWindow
 import play
+import agentDqnDetailsWindow
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -37,6 +38,9 @@ class Gui:
 
     def accept_start_learning(self):
 
+        self.settigns.game_settings.max_episodes=self.learning_ui.episodes_number.value()
+        self.settigns.game_settings.target_accuracy=self.learning_ui.stop_accuracy.value()
+
         self.game=play.Play(self.settigns)
         self.game.statistics.signal_plot.connect(self.plot)
         self.game.start()
@@ -52,17 +56,65 @@ class Gui:
 
         self.agent_creation_window = QtWidgets.QMainWindow()
         self.agent_creation_ui = AgentCreationWindow()
-        self.agent_creation_ui.setupUi(self.agent_creation_window,self.settigns.agent_settings)
+        self.agent_creation_ui.setupUi(self.agent_creation_window)
+        self.set_current_values_in_agent_creation_form()
         self.agent_creation_ui.confirm_box.accepted.connect(self.accept_new_agent_settings)
         self.agent_creation_ui.confirm_box.rejected.connect(self.reject_new_agent_settings)
         self.agent_creation_window.show()
 
+    def set_current_values_in_agent_creation_form(self):
+        self.set_current_algorithm_in_comb_box()
+        self.agent_creation_ui.gmma_spin.setValue(self.settigns.agent_settings.gamma)
+
+    def set_current_algorithm_in_comb_box(self):
+        index=self.agent_creation_ui.algorithm_slection.findText(settigns.agent_settings.algorithm)
+        self.agent_creation_ui.algorithm_slection.setCurrentIndex(index)
+
     def accept_new_agent_settings(self):
         self.settigns.agent_settings.algorithm=self.agent_creation_ui.algorithm_slection.currentText()
-        self.agent_creation_window.close()
+        self.settigns.agent_settings.gamma=self.agent_creation_ui.gmma_spin.value()
+        if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
+            self.open_dqn_details_windows()
+            self.agent_creation_window.close()
 
     def reject_new_agent_settings(self):
         self.agent_creation_window.close()
+
+    def set_current_values_in_details_windows(self):
+        self.agent_details_ui.replay_size_spin.setValue(self.settigns.agent_settings.replay_size)
+        self.agent_details_ui.mini_batch_size.setValue(self.settigns.agent_settings.mini_batch)
+        self.agent_details_ui.exploration_decay_spin.setValue(self.settigns.agent_settings.exploration_decay)
+        self.agent_details_ui.start_exploration_spin.setValue(self.settigns.agent_settings.start_exploration_value)
+        self.agent_details_ui.learning_rate_spin.setValue(self.settigns.agent_settings.learning_rate)
+        self.agent_details_ui.mnimal_exploration_spin.setValue( self.settigns.agent_settings.mnimal_exploration)
+
+    def accept_new_agent_details_settings(self):
+        self.settigns.agent_settings.replay_size=self.agent_details_ui.replay_size_spin.value()
+        self.settigns.agent_settings.mini_batch=self.agent_details_ui.mini_batch_size.value()
+        self.settigns.agent_settings.exploration_decay=self.agent_details_ui.exploration_decay_spin.value()
+        self.settigns.agent_settings.start_exploration_value=self.agent_details_ui.start_exploration_spin.value()
+        self.settigns.agent_settings.learning_rate=self.agent_details_ui.learning_rate_spin.value()
+        self.settigns.agent_settings.mnimal_exploration=self.agent_details_ui.mnimal_exploration_spin.value()
+        self.agent_details_window.close()
+
+    def reject_new_agent_details_settings(self):
+        self.agent_details_window.close()
+
+    def open_dqn_details_windows(self):
+        self.agent_details_window= QtWidgets.QMainWindow()
+        self.agent_details_ui =agentDqnDetailsWindow.Ui_MainWindow()
+        self.agent_details_ui.setupUi(self.agent_details_window)
+
+        self.agent_details_ui.buttonBox.accepted.connect(self.accept_new_agent_details_settings)
+        self.agent_details_ui.buttonBox.rejected.connect(self.reject_new_agent_details_settings)
+        self.set_current_values_in_details_windows()
+        self.agent_details_window.show()
+
+
+
+
+
+
 
 if __name__ == "__main__":
 

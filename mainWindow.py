@@ -80,7 +80,7 @@ class Ui_main_window(object):
     def retranslateUi(self, main_window):
         _translate = QtCore.QCoreApplication.translate
         main_window.setWindowTitle(_translate("main_window", "Środowisko do testów algrytmow uczenia ze wzmocnieniem"))
-        self.curve_view.setText(_translate("main_window", "TextLabel"))
+        self.curve_view.setText(_translate("main_window", ""))
         self.menu_agent.setTitle(_translate("main_window", "Agent"))
         self.menu_environment.setTitle(_translate("main_window", "Gry"))
         self.menu_start.setTitle(_translate("main_window", "Uruchom"))

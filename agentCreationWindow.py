@@ -10,9 +10,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from settings import AgentSettings
 
 class AgentCreationWindow(object):
-    def setupUi(self, MainWindow, settings_agent: AgentSettings):
+    def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(440, 135)
+        MainWindow.resize(520, 135)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -30,6 +30,16 @@ class AgentCreationWindow(object):
         self.algorithm_slection.addItem("")
         self.algorithm_slection.addItem("")
         self.gridLayout.addWidget(self.algorithm_slection, 0, 1, 1, 1)
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
+        self.gmma_spin = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.gmma_spin.setDecimals(3)
+        self.gmma_spin.setMinimum(0.01)
+        self.gmma_spin.setMaximum(1.0)
+        self.gmma_spin.setSingleStep(0.01)
+        self.gmma_spin.setObjectName("gmma_spin")
+        self.gridLayout.addWidget(self.gmma_spin, 1, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.confirm_box = QtWidgets.QDialogButtonBox(self.centralwidget)
         self.confirm_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
@@ -41,10 +51,7 @@ class AgentCreationWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-
         self.retranslateUi(MainWindow)
-        new_index = self.algorithm_slection.findText(settings_agent.algorithm, QtCore.Qt.MatchExactly)
-        self.algorithm_slection.setCurrentIndex(new_index)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -56,4 +63,7 @@ class AgentCreationWindow(object):
         self.algorithm_slection.setItemText(2, _translate("MainWindow", "Strategia Gradientowa"))
         self.algorithm_slection.setItemText(3, _translate("MainWindow", "Advantage Actor Critic"))
         self.algorithm_slection.setItemText(4, _translate("MainWindow", "Proximal Policy Optimization"))
+        self.label.setText(_translate("MainWindow", "Współczynnnik dyskontowania nagrody"))
+
+
 
