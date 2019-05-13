@@ -22,16 +22,22 @@ class Statistics():
         self.last_score_batch.append(score)
         if (self.score_list.__len__()-1)%self.episodes_batch_size==0:
 
-            mean_from_batch=self.get_current_mean_score()
+            mean_from_batch=self.get_last_score_batch_mean_score()
             self.batches_means.append(mean_from_batch)
             self.last_score_batch=[]
             plt.plot(np.arange(self.batches_means.__len__()), self.batches_means)
             plt.savefig('new_curve.png')
             self.signal_plot.emit()
 
-    def get_current_mean_score(self):
+    def get_last_score_batch_mean_score(self):
         last_score_batch_table = np.asarray(self.last_score_batch)
         return last_score_batch_table.mean()
+
+    def get_current_mean_score(self):
+        if self.batches_means.__len__()!=0:
+            return self.batches_means[-1]
+        else:
+            return -9999999
 
 
 

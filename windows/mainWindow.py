@@ -19,8 +19,21 @@ class Ui_main_window(object):
         self.gridLayout = QtWidgets.QGridLayout(self.plot)
         self.gridLayout.setObjectName("gridLayout")
         self.curve_view = QtWidgets.QLabel(self.plot)
+        self.curve_view.setText("")
         self.curve_view.setObjectName("curve_view")
-        self.gridLayout.addWidget(self.curve_view, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.curve_view, 1, 0, 1, 1)
+        self.information_label = QtWidgets.QLabel(self.plot)
+        self.information_label.setMaximumSize(QtCore.QSize(782, 50))
+        font = QtGui.QFont()
+        font.setFamily("Sarai")
+        font.setPointSize(40)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
+        self.information_label.setFont(font)
+        self.information_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.information_label.setObjectName("information_label")
+        self.gridLayout.addWidget(self.information_label, 0, 0, 1, 1)
         main_window.setCentralWidget(self.plot)
         self.menubar = QtWidgets.QMenuBar(main_window)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -80,7 +93,7 @@ class Ui_main_window(object):
     def retranslateUi(self, main_window):
         _translate = QtCore.QCoreApplication.translate
         main_window.setWindowTitle(_translate("main_window", "Środowisko do testów algrytmow uczenia ze wzmocnieniem"))
-        self.curve_view.setText(_translate("main_window", ""))
+        self.information_label.setText(_translate("main_window", "Gotowy do uruchomienia"))
         self.menu_agent.setTitle(_translate("main_window", "Agent"))
         self.menu_environment.setTitle(_translate("main_window", "Gry"))
         self.menu_start.setTitle(_translate("main_window", "Uruchom"))
@@ -96,4 +109,5 @@ class Ui_main_window(object):
         self.action_pong_prestart.setText(_translate("main_window", "Pong"))
         self.action_Sonic_the_hedgehog_prestart.setText(_translate("main_window", "Sonic the hedgehog"))
         self.action_save_graph.setText(_translate("main_window", "Zapisz"))
+
 

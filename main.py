@@ -1,14 +1,14 @@
-from statistics import Statistics
-from PyQt5 import QtWidgets,QtCore
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QPixmap
 import sys
-from PyQt5.QtWidgets import QApplication,QDialog,QLabel
-from mainWindow import Ui_main_window
-from agentCreationWindow import AgentCreationWindow
+from PyQt5.QtWidgets import QApplication
+from windows.mainWindow import Ui_main_window
+from windows.agentCreationWindow import AgentCreationWindow
 from settings import Settings
-from learningWindow import LearningWindow
+from windows.learningWindow import LearningWindow
 import play
-import agentDqnDetailsWindow
+from windows import agentDqnDetailsWindow
+
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -36,6 +36,9 @@ class Gui:
         self.ui.curve_view.setPixmap(pixmap)
         self.main_window.repaint()
 
+    def update_infromation_about_episode_number(self,episode_number):
+        self.ui.information_label.setText("Trwa uczenie:epizod "+str(episode_number))
+
     def accept_start_learning(self):
 
         self.settigns.game_settings.max_episodes=self.learning_ui.episodes_number.value()
@@ -43,6 +46,8 @@ class Gui:
 
         self.game=play.Play(self.settigns)
         self.game.statistics.signal_plot.connect(self.plot)
+        self.game.signal_episode.connect(self.update_infromation_about_episode_number)
+        self.ui.information_label.setText("Trwa uczenie:epizod 0")
         self.game.start()
 
         self.learning_window.close()
@@ -112,7 +117,7 @@ class Gui:
 
     def open_dqn_details_windows(self):
         self.agent_details_window= QtWidgets.QMainWindow()
-        self.agent_details_ui =agentDqnDetailsWindow.Ui_MainWindow()
+        self.agent_details_ui = agentDqnDetailsWindow.Ui_MainWindow()
         self.agent_details_ui.setupUi(self.agent_details_window)
 
         self.agent_details_ui.buttonBox.accepted.connect(self.accept_new_agent_details_settings)

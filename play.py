@@ -1,6 +1,6 @@
 from settings import *
 import gym
-from AgentDQN import DQNAgent
+from agents.AgentDQN import DQNAgent
 import numpy as np
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
@@ -10,6 +10,7 @@ class Play(QThread):
 
 
     signal_plot = pyqtSignal()
+    signal_episode = pyqtSignal("int")
     def __init__(self, settigns:Settings):
         QThread.__init__(self)
         self.settigns=settigns
@@ -60,7 +61,7 @@ class Play(QThread):
                 if done:
                     # every episode update the target model to be same with model
                     agent.update_target_model()
-
+                    self.signal_episode.emit(e)
                     # every episode, plot the play time
                     score = score if score == 500 else score + 100
                     self.statistics.append_score(score)
