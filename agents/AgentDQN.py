@@ -13,7 +13,7 @@ class DQNAgent:
         # if you want to see Cartpole learning, then change to True
         self.render = False
         self.load_model = False
-
+        self.is_baseline=False
         # get size of state and action
         self.state_size = state_size
         self.action_size = action_size
@@ -71,6 +71,8 @@ class DQNAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
+
+
     # pick samples randomly from replay memory (with batch_size)
     def train_model(self):
         if len(self.memory) < self.train_start:
@@ -103,3 +105,6 @@ class DQNAgent:
         # and do the model fit!
         self.model.fit(update_input, target, batch_size=self.batch_size,
                        epochs=1, verbose=0)
+
+class DQNAgentBaseline():
+    pass

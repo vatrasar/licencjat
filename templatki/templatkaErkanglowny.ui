@@ -77,9 +77,7 @@
     <property name="title">
      <string>Gry</string>
     </property>
-    <addaction name="action_cartpole_prestart"/>
-    <addaction name="action_pong_prestart"/>
-    <addaction name="action_Sonic_the_hedgehog_prestart"/>
+    <addaction name="action_game_selection"/>
    </widget>
    <widget class="QMenu" name="menu_start">
     <property name="title">
@@ -153,6 +151,11 @@
   <action name="action_save_graph">
    <property name="text">
     <string>Zapisz</string>
+   </property>
+  </action>
+  <action name="action_game_selection">
+   <property name="text">
+    <string>Wybierz</string>
    </property>
   </action>
  </widget>

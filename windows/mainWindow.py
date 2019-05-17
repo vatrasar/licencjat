@@ -72,13 +72,13 @@ class Ui_main_window(object):
         self.action_Sonic_the_hedgehog_prestart.setObjectName("action_Sonic_the_hedgehog_prestart")
         self.action_save_graph = QtWidgets.QAction(main_window)
         self.action_save_graph.setObjectName("action_save_graph")
+        self.action_game_selection = QtWidgets.QAction(main_window)
+        self.action_game_selection.setObjectName("action_game_selection")
         self.menu_agent.addAction(self.action_load_agent)
         self.menu_agent.addAction(self.action_create_agent)
         self.menu_agent.addAction(self.action_agent_edit)
         self.menu_agent.addAction(self.action_agent_save)
-        self.menu_environment.addAction(self.action_cartpole_prestart)
-        self.menu_environment.addAction(self.action_pong_prestart)
-        self.menu_environment.addAction(self.action_Sonic_the_hedgehog_prestart)
+        self.menu_environment.addAction(self.action_game_selection)
         self.menu_start.addAction(self.action_test_settings_open)
         self.menu_start.addAction(self.action_learn_settings_open)
         self.menu_graph.addAction(self.action_save_graph)
@@ -109,5 +109,7 @@ class Ui_main_window(object):
         self.action_pong_prestart.setText(_translate("main_window", "Pong"))
         self.action_Sonic_the_hedgehog_prestart.setText(_translate("main_window", "Sonic the hedgehog"))
         self.action_save_graph.setText(_translate("main_window", "Zapisz"))
+        self.action_game_selection.setText(_translate("main_window", "Wybierz"))
+
 
 

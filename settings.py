@@ -25,6 +25,7 @@ class GameSettings():
         self.max_episodes = max_episodes
         self.target_accuracy=accuracy
         self.episodes_batch_size=episodes_batch_size
+        self.game_name="Pong"
 
 
 

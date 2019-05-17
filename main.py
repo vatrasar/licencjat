@@ -9,6 +9,7 @@ from windows.learningWindow import LearningWindow
 import play
 from windows import agentDqnDetailsWindow
 import windows.informationWindow
+import windows.gameSelection
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -21,7 +22,30 @@ class Gui:
     def add_actions(self):
         self.ui.action_create_agent.triggered.connect(self.open_agent_creation_window)
         self.ui.action_learn_settings_open.triggered.connect(self.open_learning_settings_window)
+        self.ui.action_game_selection.triggered.connect(self.open_game_selection_window)
 
+
+    def open_game_selection_window(self):
+        self.game_selection_window = QtWidgets.QMainWindow()
+        self.game_selection_ui = windows.gameSelection.Ui_MainWindow()
+        self.game_selection_ui.setupUi(self.game_selection_window)
+        self.game_selection_ui.buttonBox.accepted.connect(self.accept_selected_game)
+        self.game_selection_ui.buttonBox.rejected.connect(self.reject_selected_game)
+        self.set_current_game_comb_box()
+        self.game_selection_window.show()
+
+    def accept_selected_game(self):
+        self.settigns.game_settings.game_name=self.game_selection_ui.game_combo_box.currentText()
+        self.game_selection_window.close()
+
+    def reject_selected_game(self):
+
+        self.game_selection_window.close()
+
+
+    def set_current_game_comb_box(self):
+        index = self.game_selection_ui.game_combo_box.findText(settigns.game_settings.game_name)
+        self.game_selection_ui.game_combo_box.setCurrentIndex(index)
 
     def open_learning_settings_window(self):
         self.learning_window = QtWidgets.QMainWindow()
@@ -30,6 +54,10 @@ class Gui:
         self.learning_ui.confirm_box.accepted.connect(self.accept_start_learning)
         self.learning_ui.confirm_box.rejected.connect(self.reject_start_learning)
         self.learning_window.show()
+
+    def set_current_algorithm_in_comb_box(self):
+        index = self.agent_creation_ui.algorithm_slection.findText(settigns.agent_settings.algorithm)
+        self.agent_creation_ui.algorithm_slection.setCurrentIndex(index)
 
     def plot(self):
         pixmap = QPixmap('new_curve.png')
