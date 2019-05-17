@@ -5,6 +5,7 @@ import numpy as np
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 from statistics import Statistics
+from keras import backend
 
 class Play(QThread):
 
@@ -79,6 +80,7 @@ class Play(QThread):
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
 
+        backend.clear_session()
 
 
 
