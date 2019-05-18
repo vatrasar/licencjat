@@ -34,8 +34,10 @@ class Play(QThread):
         action_size = env.action_space.n
         a=self.settigns.agent_settings
         b=self.agent_load
-        #agent = DQNAgent(state_size, action_size,self.settigns.agent_settings,self.agent_load)
-        agent=AgentPG(state_size, action_size,a,self.agent_load)
+        if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
+            agent = DQNAgent(state_size, action_size,self.settigns.agent_settings,self.agent_load)
+        if self.settigns.agent_settings.algorithm=="Strategia Gradientowa":
+            agent=AgentPG(state_size, action_size,a,self.agent_load)
         done_signal_emited=False
 
         if not(agent.is_baseline):
@@ -83,8 +85,8 @@ class Play(QThread):
             agent.learn()
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
-        if not(self.agent_load) and False:
-            agent.model.save_weights("./agent.h5")
+        if not(self.agent_load):
+            agent.save_model()
         backend.clear_session()
 
 

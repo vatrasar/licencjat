@@ -11,7 +11,7 @@ from windows import agentDqnDetailsWindow
 import windows.informationWindow
 import windows.gameSelection
 import windows.testWindow
-
+import windows.PGSettingsWindow
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -160,7 +160,34 @@ class Gui:
         self.settigns.agent_settings.gamma=self.agent_creation_ui.gmma_spin.value()
         if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
             self.open_dqn_details_windows()
-            self.agent_creation_window.close()
+        if self.settigns.agent_settings.algorithm=="Strategia Gradientowa":
+            self.open_pg_details_windows()
+
+        self.agent_creation_window.close()
+
+    def open_pg_details_windows(self):
+
+        self.agent_pg_details_window = QtWidgets.QMainWindow()
+        self.agent_pg_details_ui = windows.PGSettingsWindow.Ui_MainWindow()
+        self.agent_pg_details_ui.setupUi(self.agent_pg_details_window)
+
+        self.agent_pg_details_ui.buttonBox.accepted.connect(self.accept_new_agent_pg_details_settings)
+        self.agent_pg_details_ui.buttonBox.rejected.connect(self.reject_new_agent_pg_details_settings)
+        self.agent_pg_details_ui.default_settings_button.clicked.connect(self.set_default_agent_pg_details)
+
+
+        self.agent_pg_details_window.show()
+
+    def accept_new_agent_pg_details_settings(self):
+        self.settigns.agent_settings.learning_rate = self.agent_pg_details_ui.learning_rate_spin.value()
+        self.agent_pg_details_window.close()
+
+    def reject_new_agent_pg_details_settings(self):
+
+        self.agent_pg_details_window.close()
+    def set_default_agent_pg_details(self):
+        self.agent_pg_details_ui.learning_rate_spin.setValue(0.01)
+        self.settigns.agent_settings.gamma=0.95
 
     def reject_new_agent_settings(self):
         self.agent_creation_window.close()
@@ -186,12 +213,31 @@ class Gui:
         self.agent_details_window.close()
 
     def set_default_agent_details(self):
-        if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
-            self.settigns.agent_settings.set_dqn_default()
-            if not(self.agent_creation_window.isVisible()):
+
+        if not (self.agent_creation_window.isVisible()):
+            if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
+                self.settigns.agent_settings.set_dqn_default()
+
                 self.set_current_values_in_details_windows()
-            else:
+
+            if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
+                self.settigns.agent_settings.set_pg_default()
+
+                self.set_current_values_in_details_windows()
+
+            self.set_current_values_in_agent_creation_form()
+
+        else:
+            self.settigns.agent_settings.algorithm="Strategia Gradientowa"
+            if self.agent_creation_ui.algorithm_slection.currentText()=="Deep Q-Learning":
+                self.settigns.agent_settings.algorithm = "Deep Q-Learning"
+                self.settigns.agent_settings.set_dqn_default()
                 self.set_current_values_in_agent_creation_form()
+            if self.agent_creation_ui.algorithm_slection.currentText() == "Strategia Gradientowa":
+                self.settigns.agent_settings.algorithm = "Strategia Gradientowa"
+                self.settigns.agent_settings.set_pg_default()
+                self.set_current_values_in_agent_creation_form()
+
 
     def open_dqn_details_windows(self):
         self.agent_details_window= QtWidgets.QMainWindow()

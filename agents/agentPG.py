@@ -4,6 +4,8 @@ import gym
 from settings import Settings
 
 class AgentPG():
+
+
     def __init__(self,state_size, action_size,settings,is_agent_to_load):
         ## ENVIRONMENT Hyperparameters
         self.state_size = state_size
@@ -16,6 +18,8 @@ class AgentPG():
         self.episode_states, self.episode_actions, self.episode_rewards = [], [], []
         self.is_baseline=False
         self.build_model()
+        if is_agent_to_load:
+            self.load_model()
 
 
     def discount_and_normalize_rewards(self,episode_rewards):
@@ -106,11 +110,11 @@ class AgentPG():
         self.episode_states.append(state)
     def save_model(self):
         saver = tf.train.Saver()
-        saver.save(self.sess, "./agent.ckpt")
+        saver.save(self.sess, "./models/agent.ckpt")
         print("Model saved")
     def load_model(self):
         saver = tf.train.Saver()
-        saver.restore(self.sess,  "./agent.ckpt")
+        saver.restore(self.sess,  "./models/agent.ckpt")
     def train_model(self):
         pass
 

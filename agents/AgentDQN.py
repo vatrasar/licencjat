@@ -37,7 +37,7 @@ class DQNAgent:
         # initialize target model
         self.update_target_model()
         if self.is_agent_to_load:
-           self.model.load_weights("./agent.h5")
+           self.model.load_weights("./models/agent.h5")
 
 
 
@@ -111,6 +111,9 @@ class DQNAgent:
         # and do the model fit!
         self.model.fit(update_input, target, batch_size=self.batch_size,
                        epochs=1, verbose=0)
+
+    def save_model(self):
+        self.model.save_weights("./models/agent.h5")
 
 class DQNAgentBaseline():
     pass

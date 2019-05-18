@@ -19,6 +19,10 @@ class AgentSettings():
         self.learning_rate = 0.001
         self.mnimal_exploration = 0.01
 
+    def set_pg_default(self):
+        self.gamma=0.95
+        self.learning_rate=0.01
+
 
 class GameSettings():
     def __init__(self,max_episodes=1000,accuracy=90,episodes_batch_size=10):
