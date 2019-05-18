@@ -11,7 +11,7 @@ from windows import agentDqnDetailsWindow
 import windows.informationWindow
 import windows.gameSelection
 import windows.testWindow
-import test
+
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -103,7 +103,6 @@ class Gui:
         self.ui.information_label.setText("Gotowy do uruchomienia")
 
     def test_done(self,episodes,mean_score):
-
 
         self.ui.information_label.setText("Gotowy do uruchomienia")
 

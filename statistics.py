@@ -15,6 +15,7 @@ class Statistics():
         self.last_score_batch=[]
         self.batches_means=[]
         self.signal_plot=signal
+        plt.close()
 
 
     def append_score(self,score):
