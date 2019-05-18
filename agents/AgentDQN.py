@@ -9,7 +9,7 @@ from settings import AgentSettings
 
 
 class DQNAgent:
-    def __init__(self, state_size, action_size, agent_settings: AgentSettings):
+    def __init__(self, state_size, action_size, agent_settings,is_agent_to_load):
         # if you want to see Cartpole learning, then change to True
         self.render = False
         self.load_model = False
@@ -18,6 +18,7 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
 
+        self.is_agent_to_load=is_agent_to_load
         # These are hyper parameters for the DQN
         self.discount_factor = agent_settings.gamma
         self.learning_rate = agent_settings.learning_rate
@@ -35,9 +36,11 @@ class DQNAgent:
 
         # initialize target model
         self.update_target_model()
+        if self.is_agent_to_load:
+           self.model.load_weights("./agent.h5")
 
-        if self.load_model:
-            self.model.load_weights("./save_model/cartpole_dqn.h5")
+
+
 
     # approximate Q function using Neural Network
     # state is input and Q Value of each action is output of network
@@ -50,7 +53,9 @@ class DQNAgent:
         model.add(Dense(self.action_size, activation='linear',
                         kernel_initializer='he_uniform'))
         model.summary()
+
         model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
+
         return model
 
     # after some time interval update the target model to be same with model
@@ -64,6 +69,7 @@ class DQNAgent:
         else:
             q_value = self.model.predict(state)
             return np.argmax(q_value[0])
+
 
     # save sample <s,a,r,s'> to the replay memory
     def append_sample(self, state, action, reward, next_state, done):

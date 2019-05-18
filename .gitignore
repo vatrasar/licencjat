@@ -1,3 +1,6 @@
 venv
 .idea
 __pycache__
+new_curve.png
+cartpole_dqn.png
+agent.h5

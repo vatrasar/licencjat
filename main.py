@@ -10,6 +10,8 @@ import play
 from windows import agentDqnDetailsWindow
 import windows.informationWindow
 import windows.gameSelection
+import windows.testWindow
+import test
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -23,8 +25,33 @@ class Gui:
         self.ui.action_create_agent.triggered.connect(self.open_agent_creation_window)
         self.ui.action_learn_settings_open.triggered.connect(self.open_learning_settings_window)
         self.ui.action_game_selection.triggered.connect(self.open_game_selection_window)
+        self.ui.action_test_settings_open.triggered.connect(self.open_test_settings_window)
 
 
+    def open_test_settings_window(self):
+        self.test_settings_window = QtWidgets.QMainWindow()
+        self.test_settings_ui = windows.testWindow.Ui_MainWindow()
+        self.test_settings_ui.setupUi(self.test_settings_window)
+        self.test_settings_ui.buttonBox.accepted.connect(self.accept_test_settings)
+        self.test_settings_ui.buttonBox.rejected.connect(self.reject_test_settings)
+
+        self.test_settings_window.show()
+
+    def reject_test_settings(self):
+        self.test_settings_window.close()
+
+    def accept_test_settings(self):
+        self.settigns.game_settings.max_episodes = self.test_settings_ui.spinBox.value()
+
+        self.settigns.agent_settings.start_exploration_value=0.001
+        self.game = play.Play(self.settigns,True,True)
+        self.game.statistics.signal_plot.connect(self.plot)
+        self.game.signal_episode.connect(self.update_infromation_about_episode_number_in_test)
+        self.game.signal_done.connect(self.test_done)
+        self.ui.information_label.setText("Testy:epizod 0")
+        self.game.start()
+
+        self.test_settings_window.close()
     def open_game_selection_window(self):
         self.game_selection_window = QtWidgets.QMainWindow()
         self.game_selection_ui = windows.gameSelection.Ui_MainWindow()
@@ -67,11 +94,18 @@ class Gui:
     def update_infromation_about_episode_number(self,episode_number):
         self.ui.information_label.setText("Trwa uczenie:epizod "+str(episode_number))
 
+    def update_infromation_about_episode_number_in_test(self,episode_number):
+        self.ui.information_label.setText("Trwa testowanie:epizod "+str(episode_number))
+
     def learning_done(self,episodes,mean_score):
 
         self.open_information_window(episodes,mean_score)
         self.ui.information_label.setText("Gotowy do uruchomienia")
 
+    def test_done(self,episodes,mean_score):
+
+
+        self.ui.information_label.setText("Gotowy do uruchomienia")
 
     def open_information_window(self,episodes,mean_score):
         self.information_window = QtWidgets.QMainWindow()
@@ -88,7 +122,7 @@ class Gui:
         self.settigns.game_settings.max_episodes=self.learning_ui.episodes_number.value()
         self.settigns.game_settings.target_accuracy=self.learning_ui.stop_accuracy.value()
 
-        self.game=play.Play(self.settigns)
+        self.game=play.Play(self.settigns,False,False)
         self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
         self.game.signal_done.connect(self.learning_done)

@@ -13,12 +13,12 @@ class Play(QThread):
     signal_plot = pyqtSignal()
     signal_episode = pyqtSignal("int")
     signal_done=pyqtSignal("int","int")
-    def __init__(self, settigns:Settings):
+    def __init__(self, settigns:Settings,render,agent_load):
         QThread.__init__(self)
         self.settigns=settigns
         self.statistics=Statistics(settigns.game_settings.episodes_batch_size,self.signal_plot)
-
-
+        self.render=render
+        self.agent_load=agent_load
     def __del__(self):
         self.wait()
 
@@ -32,7 +32,7 @@ class Play(QThread):
         state_size = env.observation_space.shape[0]
         action_size = env.action_space.n
 
-        agent = DQNAgent(state_size, action_size,self.settigns.agent_settings)
+        agent = DQNAgent(state_size, action_size,self.settigns.agent_settings,self.agent_load)
         done_signal_emited=False
 
         if not(agent.is_baseline):
@@ -46,7 +46,7 @@ class Play(QThread):
                 state = np.reshape(state, [1, state_size])
 
                 while not done:
-                    if agent.render:
+                    if self.render:
                         env.render()
 
                     # get action for the current state and go one step in environment
@@ -70,16 +70,18 @@ class Play(QThread):
                         # every episode, plot the play time
                         score = score if score == 500 else score + 100
                         self.statistics.append_score(score)
-                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy:
+                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.agent_load):
                     self.signal_done.emit(
                         e+1, self.statistics.get_current_mean_score())
                     done_signal_emited=True
+
                     break
         else:
             agent.learn()
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
-
+        if not(self.agent_load):
+            agent.model.save_weights("./agent.h5")
         backend.clear_session()
 
 
