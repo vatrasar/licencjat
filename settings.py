@@ -8,6 +8,8 @@ class AgentSettings():
         self.start_exploration_value =1
         self.learning_rate = 0.001
         self.mnimal_exploration = 0.01
+        self.actor_lr = 0.001
+        self.critic_lr = 0.005
 
     def set_dqn_default(self):
 

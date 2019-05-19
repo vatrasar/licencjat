@@ -7,6 +7,7 @@ from PyQt5.QtCore import pyqtSignal
 from statistics import Statistics
 from keras import backend
 from agents.agentPG import AgentPG
+from agents.agentA2C import AgentA2C
 
 class Play(QThread):
 
@@ -38,6 +39,9 @@ class Play(QThread):
             agent = DQNAgent(state_size, action_size,self.settigns.agent_settings,self.agent_load)
         if self.settigns.agent_settings.algorithm=="Strategia Gradientowa":
             agent=AgentPG(state_size, action_size,a,self.agent_load)
+
+        if self.settigns.agent_settings.algorithm=="Advantage Actor Critic":
+            agent = AgentA2C(state_size, action_size, a, self.agent_load, env, self.settigns.game_settings.max_episodes)
         done_signal_emited=False
 
         if not(agent.is_baseline):
@@ -82,7 +86,9 @@ class Play(QThread):
 
                     break
         else:
-            agent.learn()
+            agent.train_model()
+
+
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
         if not(self.agent_load):
