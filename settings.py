@@ -25,6 +25,12 @@ class AgentSettings():
         self.gamma=0.95
         self.learning_rate=0.01
 
+    def set_a2c_cartpole_default(self):
+        self.algorithm="Advantage Actor Critic"
+        self.gamma=0.99
+        self.critic_lr=0.001
+        self.actor_lr=0.005
+
 
 class GameSettings():
     def __init__(self,max_episodes=1000,accuracy=90,episodes_batch_size=10):

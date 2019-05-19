@@ -57,7 +57,7 @@ from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers import Adam
 
-EPISODES = 1000
+
 
 
 # A2C(Advantage Actor-Critic) agent for the Cartpole
@@ -67,6 +67,9 @@ class A2CAgent(BaseAgent):
         self.actor_lr = agent_settings.actor_lr
         self.critic_lr = agent_settings.critic_lr
         self.value_size = 1
+        self.build_model()
+        if is_agent_to_load:
+            self.load_model()
 
     def build_model(self):
         self.build_actor()

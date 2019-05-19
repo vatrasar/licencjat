@@ -12,6 +12,7 @@ import windows.informationWindow
 import windows.gameSelection
 import windows.testWindow
 import windows.PGSettingsWindow
+import windows.agentA2cDetails
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -162,8 +163,38 @@ class Gui:
             self.open_dqn_details_windows()
         if self.settigns.agent_settings.algorithm=="Strategia Gradientowa":
             self.open_pg_details_windows()
+        if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
+            self.open_a2c_details_windows()
 
         self.agent_creation_window.close()
+    def open_a2c_details_windows(self):
+
+        self.agent_a2c_details_window = QtWidgets.QMainWindow()
+        self.agent_a2c_details_ui = windows.agentA2cDetails.Ui_MainWindow()
+        self.agent_a2c_details_ui.setupUi(self.agent_a2c_details_window)
+
+        self.agent_a2c_details_ui.buttonBox.accepted.connect(self.accept_new_agent_a2c_details_settings)
+        self.agent_a2c_details_ui.buttonBox.rejected.connect(self.reject_new_agent_a2c_details_settings)
+        self.agent_a2c_details_ui.default_settings_button.clicked.connect(self.set_default_agent_a2c_details)
+        self.agent_a2c_details_ui.actor_learning_rate_spin.setValue(settigns.agent_settings.actor_lr)
+        self.agent_a2c_details_ui.critic_learning_rate_spin.setValue(settigns.agent_settings.critic_lr)
+
+        self.agent_a2c_details_window.show()
+
+    def accept_new_agent_a2c_details_settings(self):
+        self.settigns.agent_settings.actor_lr=self.agent_a2c_details_ui.actor_learning_rate_spin.value()
+        self.settigns.agent_settings.critic_lr=self.agent_a2c_details_ui.critic_learning_rate_spin.value()
+        self.agent_a2c_details_window.close()
+
+
+    def reject_new_agent_a2c_details_settings(self):
+        self.agent_a2c_details_window.close()
+
+    def set_default_agent_a2c_details(self):
+        self.settigns.agent_settings.set_a2c_cartpole_default()
+        self.agent_a2c_details_ui.actor_learning_rate_spin.setValue(settigns.agent_settings.actor_lr)
+        self.agent_a2c_details_ui.critic_learning_rate_spin.setValue(settigns.agent_settings.critic_lr)
+
 
     def open_pg_details_windows(self):
 
@@ -223,9 +254,12 @@ class Gui:
             if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
                 self.settigns.agent_settings.set_pg_default()
 
-                self.set_current_values_in_details_windows()
+                self.set_default_agent_pg_details()
+            if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
+                self.set_default_agent_a2c_details()
+                self.settigns.agent_settings.set_a2c_default()
 
-            self.set_current_values_in_agent_creation_form()
+
 
         else:
             self.settigns.agent_settings.algorithm="Strategia Gradientowa"
@@ -236,6 +270,9 @@ class Gui:
             if self.agent_creation_ui.algorithm_slection.currentText() == "Strategia Gradientowa":
                 self.settigns.agent_settings.algorithm = "Strategia Gradientowa"
                 self.settigns.agent_settings.set_pg_default()
+                self.set_current_values_in_agent_creation_form()
+            if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
+                self.settigns.agent_settings.set_a2c_cartpole_default()
                 self.set_current_values_in_agent_creation_form()
 
 

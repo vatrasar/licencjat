@@ -7,7 +7,7 @@ from PyQt5.QtCore import pyqtSignal
 from statistics import Statistics
 from keras import backend
 from agents.agentPG import AgentPG
-from agents.agentA2C import AgentA2C
+from agents.agentA2C import A2CAgent
 
 class Play(QThread):
 
@@ -41,7 +41,7 @@ class Play(QThread):
             agent=AgentPG(state_size, action_size,a,self.agent_load)
 
         if self.settigns.agent_settings.algorithm=="Advantage Actor Critic":
-            agent = AgentA2C(state_size, action_size, a, self.agent_load, env, self.settigns.game_settings.max_episodes)
+            agent = A2CAgent(state_size, action_size, self.settigns.agent_settings,self.agent_load)
         done_signal_emited=False
 
         if not(agent.is_baseline):
@@ -94,6 +94,7 @@ class Play(QThread):
         if not(self.agent_load):
             agent.save_model()
         backend.clear_session()
+        env.close()
 
 
 
