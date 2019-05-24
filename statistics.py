@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import pyqtSignal
 import matplotlib.pyplot as plt
+import numpy as np
 class Statistics():
 
     signal_plot = pyqtSignal()
@@ -40,7 +41,21 @@ class Statistics():
         else:
             return -9999999
 
+class StatisticsBaseline(Statistics):
 
+    def __init__(self, episodes_batch_size, signal):
+        super().__init__(episodes_batch_size, signal)
+        self.last_plot_episode=0
+
+    def append_score(self, score, current_episode_number=0):
+        score=np.asarray(score)
+
+        if score.size()>self.episodes_batch_size and self.last_plot_episode-current_episode_number>self.episodes_batch_size:
+            self.batches_means.append(score[-self.episodes_batch_size:-1].mean())
+            self.last_plot_episode=current_episode_number
+            plt.plot(np.arange(self.batches_means.__len__()), self.batches_means)
+            plt.savefig('new_curve.png')
+            self.signal_plot.emit()
 
 
 

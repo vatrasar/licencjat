@@ -8,6 +8,8 @@ from statistics import Statistics
 from keras import backend
 from agents.agentPG import AgentPG
 from agents.agentA2C import A2CAgent
+from agents.agentPPO import AgentPPO
+from statistics import StatisticsBaseline
 
 class Play(QThread):
 
@@ -18,7 +20,7 @@ class Play(QThread):
     def __init__(self, settigns:Settings,render,agent_load):
         QThread.__init__(self)
         self.settigns=settigns
-        self.statistics=Statistics(settigns.game_settings.episodes_batch_size,self.signal_plot)
+
         self.render=render
         self.agent_load=agent_load
     def __del__(self):
@@ -35,13 +37,21 @@ class Play(QThread):
         action_size = env.action_space.n
         a=self.settigns.agent_settings
         b=self.agent_load
+
         if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
             agent = DQNAgent(state_size, action_size,self.settigns.agent_settings,self.agent_load)
+
         if self.settigns.agent_settings.algorithm=="Strategia Gradientowa":
             agent=AgentPG(state_size, action_size,a,self.agent_load)
 
         if self.settigns.agent_settings.algorithm=="Advantage Actor Critic":
             agent = A2CAgent(state_size, action_size, self.settigns.agent_settings,self.agent_load)
+
+        if self.settigns.agent_settings.algorithm=="Proximal Policy Optimization":
+            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            agent=AgentPPO(state_size, action_size, self.settigns.agent_settings,self.agent_load,self.signal_done,self.signal_episode,statistics)
+
+
         done_signal_emited=False
 
         if not(agent.is_baseline):
@@ -95,6 +105,8 @@ class Play(QThread):
             agent.save_model()
         backend.clear_session()
         env.close()
+
+
 
 
 
