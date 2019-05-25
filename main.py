@@ -14,6 +14,7 @@ import windows.testWindow
 import windows.PGSettingsWindow
 import windows.agentA2cDetails
 import windows.agentPPODetails
+import windows.alterWindow
 from PyQt5.QtWidgets import  QFileDialog
 
 
@@ -36,7 +37,7 @@ class Gui:
     def open_load_agent_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","All Files (*.py);;Python Files (*.py)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
         if fileName:
             self.loaded_agent_directory=fileName
 
@@ -94,7 +95,10 @@ class Gui:
         self.learning_ui.setupUi(self.learning_window)
         self.learning_ui.confirm_box.accepted.connect(self.accept_start_learning)
         self.learning_ui.confirm_box.rejected.connect(self.reject_start_learning)
-
+        if self.loaded_agent_directory=="":
+            self.learning_ui.saved_agent_radio.setCheckable(False)
+        else:
+            self.learning_ui.saved_agent_radio.setCheckable(True)
         self.learning_window.show()
 
     def set_current_algorithm_in_comb_box(self):
@@ -133,13 +137,27 @@ class Gui:
 
     def accept_start_learning(self):
 
-        self.settigns.game_settings.max_episodes=self.learning_ui.episodes_number.value()
-        self.settigns.game_settings.target_accuracy=self.learning_ui.stop_accuracy.value()
-        if self.settigns.game_settings.game_name=="cartpole":
-            self.game=play.Play(self.settigns,False,False)
-        if self.settigns.game_settings.game_name=="Pong":
-            self.game = play.PlayPong(self.settigns, False, False)
-        if not(self.game.agent.is_baseline):
+
+        if self.learning_ui.saved_agent_radio.isChecked() and self.settigns.game_settings.game_name!=self.get_orginal_game_name_fro_agent(self.loaded_agent_directory):
+            self.open_alter_windows("Uwaga! Agent mógł być trenowany na grze innej niż jest obecnie ustawiona!")
+
+
+        else:
+
+            self.prepare_learning()
+
+        self.learning_window.close()
+
+    def prepare_learning(self):
+        self.settigns.game_settings.max_episodes = self.learning_ui.episodes_number.value()
+        self.settigns.game_settings.target_accuracy = self.learning_ui.stop_accuracy.value()
+        if self.settigns.game_settings.game_name == "cartpole":
+            self.game = play.Play(self.settigns, False, False, self.loaded_agent_directory,
+                                  self.learning_ui.saved_agent_radio.isChecked())
+        if self.settigns.game_settings.game_name == "Pong":
+            self.game = play.PlayPong(self.settigns, False, False, self.loaded_agent_directory,
+                                      self.learning_ui.saved_agent_radio.isChecked())
+        if not (self.game.agent.is_baseline):
             self.game.statistics.signal_plot.connect(self.plot)
         else:
             self.game.statistics.signal_plot.connect(self.plot)
@@ -148,10 +166,27 @@ class Gui:
         self.ui.information_label.setText("Trwa uczenie:epizod 0")
         self.game.start()
 
-        self.learning_window.close()
+    def open_alter_windows(self, aleter_text):
+
+        self.alter_window = QtWidgets.QMainWindow()
+        self.alter_ui = windows.alterWindow.Ui_MainWindow()
+        self.alter_ui.setupUi(self.alter_window)
+        self.alter_ui.alter.setText(aleter_text)
+        self.alter_ui.buttonBox.accepted.connect(self.accept_action)
+        self.alter_ui.buttonBox.rejected.connect(self.reject_action)
 
 
-
+        self.alter_window.show()
+    def accept_action(self):
+        self.prepare_learning()
+        self.alter_window.close()
+    def reject_action(self):
+        self.alter_window.close()
+    def get_orginal_game_name_fro_agent(self,agent_directory):
+        input=open(agent_directory[0:-4]+".txt","r")
+        game_name=input.readline()
+        input.close()
+        return game_name
     def reject_start_learning(self):
         self.learning_window.close()
 

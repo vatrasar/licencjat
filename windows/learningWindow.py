@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'templatkaUruchamianieui.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'templatkaUruchamianieui.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -42,7 +27,8 @@ class LearningWindow(object):
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.stop_accuracy = QtWidgets.QSpinBox(self.centralwidget)
-        self.stop_accuracy.setMaximum(100)
+        self.stop_accuracy.setMinimum(-999999)
+        self.stop_accuracy.setMaximum(999999999)
         self.stop_accuracy.setObjectName("stop_accuracy")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.stop_accuracy)
         self.saved_agent_radio = QtWidgets.QRadioButton(self.centralwidget)
@@ -82,6 +68,7 @@ class LearningWindow(object):
         self.stop_accuracy.setSuffix(_translate("MainWindow", " pkt"))
         self.label_3.setText(_translate("MainWindow", "Uzyj wczytanego agenta"))
         self.label_4.setText(_translate("MainWindow", "Uzyj nowego agenta"))
+
 
 
 

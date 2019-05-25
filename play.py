@@ -20,33 +20,33 @@ class Play(QThread):
     signal_plot = pyqtSignal()
     signal_episode = pyqtSignal("int")
     signal_done=pyqtSignal("int","int")
-    def __init__(self, settigns:Settings,render,agent_load):
+    def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load):
         QThread.__init__(self)
         self.settigns=settigns
         self.statistics=Statistics(10,self.signal_plot)
         self.render=render
-        self.agent_load=agent_load
+        self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
         self.env = gym.make('CartPole-v1')
         # get size of state and action from environment
         self.state_size = self.env.observation_space.shape[0]
         self.action_size = self.env.action_space.n
         a = self.settigns.agent_settings
-        b = self.agent_load
+
 
         if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
-            self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load)
+            self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load)
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
-            self.agent = AgentPG(self.state_size, self.action_size, a, self.agent_load)
+            self.agent = AgentPG(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load)
+            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
-            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load,self.env, self.signal_done,
-                             self.signal_episode, statistics,self.settigns.game_settings,game_type=game_type[settigns.game_settings.game_name])
+            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load, self.env, self.signal_done,
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
 
 
 
@@ -61,7 +61,7 @@ class Play(QThread):
 
         done_signal_emited=False
 
-        if not(self.agent.is_baseline) or self.agent_load==True:
+        if not(self.agent.is_baseline) or self.is_tests==True:
 
 
 
@@ -101,21 +101,21 @@ class Play(QThread):
                         # every episode, plot the play time
                         score = score if score == 500 else score + 100
                         self.statistics.append_score(score)
-                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.agent_load):
+                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.is_tests):
                     self.signal_done.emit(
                         e+1, self.statistics.get_current_mean_score())
                     done_signal_emited=True
 
                     break
         else:
-            if  self.agent_load!=True:
+            if  self.is_tests!=True:
                 self.agent.train_model()
                 done_signal_emited=True
 
 
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
-        if not(self.agent_load):
+        if not(self.is_tests):
             self.agent.save_model()
         backend.clear_session()
         self.env.close()
@@ -126,34 +126,35 @@ class PlayPong(QThread):
     signal_plot = pyqtSignal()
     signal_episode = pyqtSignal("int")
     signal_done=pyqtSignal("int","int")
-    def __init__(self, settigns:Settings,render,agent_load):
+    def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load):
         QThread.__init__(self)
         self.settigns=settigns
         self.statistics=Statistics(10,self.signal_plot)
         self.render=render
-        self.agent_load=agent_load
+        self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
         self.env = make_atari_env('PongNoFrameskip-v4', num_env=1, seed=0)
+
         self.env = VecFrameStack(self.env, n_stack=4)
         # get size of state and action from environment
         self.state_size = self.env.observation_space.shape[0]
         self.action_size = self.env.action_space.n
         a = self.settigns.agent_settings
-        b = self.agent_load
+
 
         if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
-            self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load)
+            self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load)
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
-            self.agent = AgentPG(self.state_size, self.action_size, a, self.agent_load)
+            self.agent = AgentPG(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load)
+            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
-            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, self.agent_load,self.env, self.signal_done,
-                             self.signal_episode, statistics,self.settigns.game_settings,game_type=game_type[settigns.game_settings.game_name])
+            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
 
 
 
@@ -168,7 +169,7 @@ class PlayPong(QThread):
 
         done_signal_emited=False
 
-        if not(self.agent.is_baseline) or self.agent_load==True:
+        if not(self.agent.is_baseline) or self.is_tests==True:
 
 
 
@@ -208,21 +209,21 @@ class PlayPong(QThread):
                         # every episode, plot the play time
                         # score = score if score == 500 else score + 100
                         self.statistics.append_score(score)
-                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.agent_load):
+                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.is_tests):
                     self.signal_done.emit(
                         e+1, self.statistics.get_current_mean_score())
                     done_signal_emited=True
 
                     break
         else:
-            if  self.agent_load!=True:
+            if  self.is_tests!=True:
                 self.agent.train_model()
                 done_signal_emited=True
 
 
         if not(done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
-        if not(self.agent_load):
+        if not(self.is_tests):
             self.agent.save_model()
         backend.clear_session()
         self.env.close()

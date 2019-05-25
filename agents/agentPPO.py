@@ -11,7 +11,7 @@ import time
 
 class AgentPPO(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
-                 statistic: StatisticsBaseline,game_settings,game_type):
+                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name):
         """
 
         :param state_size:
@@ -25,7 +25,7 @@ class AgentPPO(BaseAgent):
         :param game_settings:
         :param game_type: can be box or atari
         """
-        super().__init__(state_size, action_size, agent_settings, is_agent_to_load)
+        super().__init__(state_size, action_size, agent_settings, is_agent_to_load,game_name)
         self.env=env
 
         self.is_baseline=True
@@ -41,7 +41,7 @@ class AgentPPO(BaseAgent):
 
         self.last_save_time=time.time()
         if is_agent_to_load:
-            self.load_model()
+            self.load_model(agent_to_load_directory)
         else:
             self.build_model()
             
@@ -65,11 +65,17 @@ class AgentPPO(BaseAgent):
     def append_sample(self, state, action, reward, next_state, done):
         super().append_sample(state, action, reward, next_state, done)
 
-    def save_model(self):
-        self.model.save("./models/agentPPO")
+    def save_model(self,file_name="./models/agentPPO"):
+        self.model.save(file_name)
+        out=open(file_name+".txt","w")
+        out.write(self.game_name)
+        out.close()
 
-    def load_model(self):
-        self.model=PPO1.load("./models/agentPPO")
+    def load_model(self,agent_to_load_directory):
+        if  agent_to_load_directory=="":
+            self.model=PPO1.load("./models/agentPPO",env=self.env)
+        else:
+            self.model=PPO1.load(agent_to_load_directory,env=self.env)
 
     def train_model(self):
 
@@ -89,7 +95,8 @@ class AgentPPO(BaseAgent):
 
 
             self.last_save_time=time.time()
-            self.model.save("./models/agentPPOtemp")
+
+            self.save_model("./models/agentPPOtemp")
         return True
 
 

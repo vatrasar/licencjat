@@ -6,7 +6,7 @@ from settings import Settings
 class AgentPG():
 
 
-    def __init__(self,state_size, action_size,settings,is_agent_to_load):
+    def __init__(self,state_size, action_size,settings,is_agent_to_load,agent_to_load_directory):
         ## ENVIRONMENT Hyperparameters
         self.state_size = state_size
         self.action_size = action_size
@@ -19,7 +19,7 @@ class AgentPG():
         self.is_baseline=False
         self.build_model()
         if is_agent_to_load:
-            self.load_model()
+            self.load_model(agent_to_load_directory)
 
 
     def discount_and_normalize_rewards(self,episode_rewards):
@@ -112,7 +112,7 @@ class AgentPG():
         saver = tf.train.Saver()
         saver.save(self.sess, "./models/agent.ckpt")
         print("Model saved")
-    def load_model(self):
+    def load_model(self,agent_to_load_directory):
         saver = tf.train.Saver()
         saver.restore(self.sess,  "./models/agent.ckpt")
     def train_model(self):

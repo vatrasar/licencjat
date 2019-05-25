@@ -56,20 +56,21 @@ from keras.optimizers import Adam
 
 # A2C(Advantage Actor-Critic) agent for the Cartpole
 class A2CAgent(BaseAgent):
-    def __init__(self, state_size, action_size, agent_settings, is_agent_to_load):
+    def __init__(self, state_size, action_size, agent_settings, is_agent_to_load,agent_to_load_directory):
         super().__init__(state_size, action_size, agent_settings, is_agent_to_load)
         self.actor_lr = agent_settings.actor_lr
         self.critic_lr = agent_settings.critic_lr
         self.value_size = 1
         self.build_model()
+
         if is_agent_to_load:
-            self.load_model()
+            self.load_model(agent_to_load_directory)
 
     def build_model(self):
         self.build_actor()
         self.build_critic()
 
-    def load_model(self):
+    def load_model(self,agent_to_load_directory):
         self.actor.load_weights("./models/cartpole_actor.h5")
         self.critic.load_weights("./models/cartpole_critic.h5")
 

@@ -52,8 +52,11 @@
         <property name="suffix">
          <string> pkt</string>
         </property>
+        <property name="minimum">
+         <number>-999999</number>
+        </property>
         <property name="maximum">
-         <number>100</number>
+         <number>999999999</number>
         </property>
        </widget>
       </item>
