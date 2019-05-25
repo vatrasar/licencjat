@@ -7,6 +7,7 @@ class BaseAgent():
         self.action_size = action_size
         self.is_baseline=False
 
+
     def build_model(self):
         pass
 

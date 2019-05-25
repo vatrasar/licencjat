@@ -13,6 +13,7 @@ import windows.gameSelection
 import windows.testWindow
 import windows.PGSettingsWindow
 import windows.agentA2cDetails
+import windows.agentPPODetails
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -123,7 +124,10 @@ class Gui:
         self.settigns.game_settings.target_accuracy=self.learning_ui.stop_accuracy.value()
 
         self.game=play.Play(self.settigns,False,False)
-        self.game.statistics.signal_plot.connect(self.plot)
+        if not(self.game.agent.is_baseline):
+            self.game.statistics.signal_plot.connect(self.plot)
+        else:
+            self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
         self.game.signal_done.connect(self.learning_done)
         self.ui.information_label.setText("Trwa uczenie:epizod 0")
@@ -165,8 +169,43 @@ class Gui:
             self.open_pg_details_windows()
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
             self.open_a2c_details_windows()
+        if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
+            self.open_ppo_details_windows()
+
 
         self.agent_creation_window.close()
+
+    def open_ppo_details_windows(self):
+        self.agent_ppo_details_window = QtWidgets.QMainWindow()
+        self.agent_ppo_details_ui = windows.agentPPODetails.Ui_MainWindow()
+        self.agent_ppo_details_ui.setupUi(self.agent_ppo_details_window)
+
+        self.agent_ppo_details_ui.buttonBox.accepted.connect(self.accept_new_agent_ppo_details_settings)
+        self.agent_ppo_details_ui.buttonBox.rejected.connect(self.reject_new_agent_ppo_details_settings)
+        self.agent_ppo_details_ui.default_settings_button.clicked.connect(self.set_default_agent_ppo_details)
+        self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
+        self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
+        self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
+
+        self.agent_ppo_details_window.show()
+
+        settigns.agent_settings.set_ppo_default()
+
+    def set_default_agent_ppo_details(self):
+        self.settigns.agent_settings.set_ppo_default()
+        self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
+        self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
+        self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
+
+    def accept_new_agent_ppo_details_settings(self):
+        settigns.agent_settings.c2=self.agent_ppo_details_ui.c2_spin.value()
+        settigns.agent_settings.c1=self.agent_ppo_details_ui.c1_spin.value()
+        settigns.agent_settings.clip_epslion=self.agent_ppo_details_ui.epslion_spin.value()
+        self.agent_ppo_details_window.close()
+
+    def reject_new_agent_ppo_details_settings(self):
+        self.agent_ppo_details_window.close()
+
     def open_a2c_details_windows(self):
 
         self.agent_a2c_details_window = QtWidgets.QMainWindow()
@@ -258,7 +297,9 @@ class Gui:
             if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
                 self.set_default_agent_a2c_details()
                 self.settigns.agent_settings.set_a2c_default()
-
+            if  self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
+                self.set_default_agent_ppo_details()
+                self.settigns.agent_settings.set_ppo_default()
 
 
         else:
@@ -273,6 +314,9 @@ class Gui:
                 self.set_current_values_in_agent_creation_form()
             if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
                 self.settigns.agent_settings.set_a2c_cartpole_default()
+                self.set_current_values_in_agent_creation_form()
+            if self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
+                self.settigns.agent_settings.set_ppo_default()
                 self.set_current_values_in_agent_creation_form()
 
 

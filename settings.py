@@ -10,6 +10,9 @@ class AgentSettings():
         self.mnimal_exploration = 0.01
         self.actor_lr = 0.001
         self.critic_lr = 0.005
+        self.c1=0
+        self.c2=0
+        self.clip_epslion=0.1
 
     def set_dqn_default(self):
 
@@ -30,6 +33,12 @@ class AgentSettings():
         self.gamma=0.99
         self.critic_lr=0.001
         self.actor_lr=0.005
+    def set_ppo_default(self):
+        self.algorithm = "Proximal Policy Optimization"
+        self.c1 = 0.95
+        self.c2 = 0.01
+        self.clip_epslion = 0.2
+        self.gamma=0.99
 
 
 class GameSettings():
