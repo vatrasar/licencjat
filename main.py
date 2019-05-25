@@ -14,6 +14,8 @@ import windows.testWindow
 import windows.PGSettingsWindow
 import windows.agentA2cDetails
 import windows.agentPPODetails
+from PyQt5.QtWidgets import  QFileDialog
+
 
 class Gui:
     def __init__(self, window, settings: Settings):
@@ -22,12 +24,22 @@ class Gui:
         self.ui.setupUi(window)
         self.add_actions()
         self.settigns=settigns
+        self.loaded_agent_directory=""
 
     def add_actions(self):
         self.ui.action_create_agent.triggered.connect(self.open_agent_creation_window)
         self.ui.action_learn_settings_open.triggered.connect(self.open_learning_settings_window)
         self.ui.action_game_selection.triggered.connect(self.open_game_selection_window)
         self.ui.action_test_settings_open.triggered.connect(self.open_test_settings_window)
+        self.ui.action_load_agent.triggered.connect(self.open_load_agent_dialog)
+
+    def open_load_agent_dialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","All Files (*.py);;Python Files (*.py)", options=options)
+        if fileName:
+            self.loaded_agent_directory=fileName
+
 
 
     def open_test_settings_window(self):
@@ -82,6 +94,7 @@ class Gui:
         self.learning_ui.setupUi(self.learning_window)
         self.learning_ui.confirm_box.accepted.connect(self.accept_start_learning)
         self.learning_ui.confirm_box.rejected.connect(self.reject_start_learning)
+
         self.learning_window.show()
 
     def set_current_algorithm_in_comb_box(self):
