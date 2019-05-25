@@ -33,11 +33,18 @@ class AgentSettings():
         self.gamma=0.99
         self.critic_lr=0.001
         self.actor_lr=0.005
-    def set_ppo_default(self):
+    def set_ppo_cartpole_default(self):
         self.algorithm = "Proximal Policy Optimization"
         self.c1 = 0.95
         self.c2 = 0.01
         self.clip_epslion = 0.2
+        self.gamma=0.98
+
+    def set_ppo_pong_default(self):
+        self.algorithm = "Proximal Policy Optimization"
+        self.c1 = 1
+        self.c2 = 0.01
+        self.clip_epslion = 0.1
         self.gamma=0.99
 
 

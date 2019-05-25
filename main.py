@@ -122,8 +122,10 @@ class Gui:
 
         self.settigns.game_settings.max_episodes=self.learning_ui.episodes_number.value()
         self.settigns.game_settings.target_accuracy=self.learning_ui.stop_accuracy.value()
-
-        self.game=play.Play(self.settigns,False,False)
+        if self.settigns.game_settings.game_name=="cartpole":
+            self.game=play.Play(self.settigns,False,False)
+        if self.settigns.game_settings.game_name=="Pong":
+            self.game = play.PlayPong(self.settigns, False, False)
         if not(self.game.agent.is_baseline):
             self.game.statistics.signal_plot.connect(self.plot)
         else:
@@ -189,10 +191,13 @@ class Gui:
 
         self.agent_ppo_details_window.show()
 
-        settigns.agent_settings.set_ppo_default()
+        settigns.agent_settings.set_ppo_cartpole_default()
 
     def set_default_agent_ppo_details(self):
-        self.settigns.agent_settings.set_ppo_default()
+        if settigns.game_settings.game_name == "cartpole":
+            self.settigns.agent_settings.set_ppo_cartpole_default()
+        if settigns.game_settings.game_name == "Pong":
+            self.settigns.agent_settings.set_ppo_pong_default()
         self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
         self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
         self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
@@ -299,7 +304,10 @@ class Gui:
                 self.settigns.agent_settings.set_a2c_default()
             if  self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
                 self.set_default_agent_ppo_details()
-                self.settigns.agent_settings.set_ppo_default()
+                if settigns.game_settings.game_name=="cartpole":
+                    self.settigns.agent_settings.set_ppo_cartpole_default()
+                if settigns.game_settings.game_name=="Pong":
+                    self.settigns.agent_settings.set_ppo_pong_default()
 
 
         else:
@@ -316,7 +324,10 @@ class Gui:
                 self.settigns.agent_settings.set_a2c_cartpole_default()
                 self.set_current_values_in_agent_creation_form()
             if self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
-                self.settigns.agent_settings.set_ppo_default()
+                if settigns.game_settings.game_name == "cartpole":
+                    self.settigns.agent_settings.set_ppo_cartpole_default()
+                if settigns.game_settings.game_name == "Pong":
+                    self.settigns.agent_settings.set_ppo_pong_default()
                 self.set_current_values_in_agent_creation_form()
 
 
