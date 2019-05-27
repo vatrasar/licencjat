@@ -91,7 +91,7 @@ class AgentPPO(BaseAgent):
             self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
             self.done=True
             return False
-        if time.time()-self.last_save_time>60:
+        if time.time()-self.last_save_time>60*10:
 
 
             self.last_save_time=time.time()

@@ -239,7 +239,7 @@ class Gui:
 
         self.agent_ppo_details_window.show()
 
-        settigns.agent_settings.set_ppo_cartpole_default()
+ 
 
     def set_default_agent_ppo_details(self):
         if settigns.game_settings.game_name == "cartpole":
