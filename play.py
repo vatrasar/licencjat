@@ -13,6 +13,7 @@ from statistics import StatisticsBaseline
 from conf import game_type
 from stable_baselines.common.cmd_util import make_atari_env
 from stable_baselines.common.vec_env import VecFrameStack
+import time
 
 class Play(QThread):
 
@@ -167,6 +168,7 @@ class PlayPong(QThread):
 
 
 
+
         done_signal_emited=False
 
         if not(self.agent.is_baseline) or self.is_tests==True:
@@ -184,6 +186,8 @@ class PlayPong(QThread):
                 while not done:
                     if self.render:
                         self.env.render()
+                        # time.sleep(0.06)
+
 
                     # get action for the current state and go one step in environment
                     action = self.agent.get_action(state)
@@ -226,7 +230,11 @@ class PlayPong(QThread):
         if not(self.is_tests):
             self.agent.save_model()
         backend.clear_session()
-        self.env.close()
+        self.env.venv.envs[0].unwrapped.viewer.window.close()
+
+
+
+
 
 
 

@@ -73,7 +73,7 @@ class AgentPPO(BaseAgent):
 
     def load_model(self,agent_to_load_directory):
         if  agent_to_load_directory=="":
-            self.model=PPO1.load("./models/agentPPO",env=self.env)
+            self.model=PPO1.load("./models/agentPPO.pkl",env=self.env)
         else:
             self.model=PPO1.load(agent_to_load_directory,env=self.env)
 

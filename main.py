@@ -59,14 +59,17 @@ class Gui:
         self.settigns.game_settings.max_episodes = self.test_settings_ui.spinBox.value()
 
         self.settigns.agent_settings.start_exploration_value=0.001
-        self.game = play.Play(self.settigns,True,True)
-        self.game.statistics.signal_plot.connect(self.plot)
-        self.game.signal_episode.connect(self.update_infromation_about_episode_number_in_test)
-        self.game.signal_done.connect(self.test_done)
-        self.ui.information_label.setText("Testy:epizod 0")
-        self.game.start()
 
         self.test_settings_window.close()
+        if self.test_settings_ui.saved_agent_radio.isChecked() and self.settigns.game_settings.game_name != self.get_orginal_game_name_fro_agent(
+                self.loaded_agent_directory):
+            self.open_alter_windows("Uwaga! Agent mógł być trenowany na grze innej niż jest obecnie ustawiona!",True)
+        else:
+
+            self.prepare_tests()
+
+
+
     def open_game_selection_window(self):
         self.game_selection_window = QtWidgets.QMainWindow()
         self.game_selection_ui = windows.gameSelection.Ui_MainWindow()
@@ -149,35 +152,73 @@ class Gui:
         self.learning_window.close()
 
     def prepare_learning(self):
+
         self.settigns.game_settings.max_episodes = self.learning_ui.episodes_number.value()
+
         self.settigns.game_settings.target_accuracy = self.learning_ui.stop_accuracy.value()
+
         if self.settigns.game_settings.game_name == "cartpole":
             self.game = play.Play(self.settigns, False, False, self.loaded_agent_directory,
                                   self.learning_ui.saved_agent_radio.isChecked())
         if self.settigns.game_settings.game_name == "Pong":
             self.game = play.PlayPong(self.settigns, False, False, self.loaded_agent_directory,
                                       self.learning_ui.saved_agent_radio.isChecked())
-        if not (self.game.agent.is_baseline):
-            self.game.statistics.signal_plot.connect(self.plot)
-        else:
-            self.game.statistics.signal_plot.connect(self.plot)
+
+        self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
         self.game.signal_done.connect(self.learning_done)
+
+
         self.ui.information_label.setText("Trwa uczenie:epizod 0")
+
         self.game.start()
 
-    def open_alter_windows(self, aleter_text):
+    def prepare_tests(self):
+
+        self.settigns.game_settings.max_episodes = self.test_settings_ui.spinBox.value()
+
+        if self.test_settings_ui.saved_agent_radio.isChecked():
+            loaded_agent_directory=self.loaded_agent_directory
+        else:
+            loaded_agent_directory=""
+
+        if self.settigns.game_settings.game_name == "cartpole":
+
+            self.game = play.Play(self.settigns, True, True, loaded_agent_directory,
+                                  True)
+        if self.settigns.game_settings.game_name == "Pong":
+            self.game = play.PlayPong(self.settigns,True, True,loaded_agent_directory,
+                                      True)
+
+        self.game.statistics.signal_plot.connect(self.plot)
+        self.game.signal_episode.connect(self.update_infromation_about_episode_number)
+        self.game.signal_done.connect(self.learning_done)
+
+
+        self.ui.information_label.setText("Testy:epizod 0")
+
+
+        self.game.start()
+
+
+    def open_alter_windows(self, aleter_text,is_test):
 
         self.alter_window = QtWidgets.QMainWindow()
         self.alter_ui = windows.alterWindow.Ui_MainWindow()
         self.alter_ui.setupUi(self.alter_window)
         self.alter_ui.alter.setText(aleter_text)
-        self.alter_ui.buttonBox.accepted.connect(self.accept_action)
+        if is_test:
+            self.alter_ui.buttonBox.accepted.connect(self.accept_test_action)
+        else:
+            self.alter_ui.buttonBox.accepted.connect(self.accept_learning_action)
         self.alter_ui.buttonBox.rejected.connect(self.reject_action)
 
 
         self.alter_window.show()
-    def accept_action(self):
+    def accept_test_action(self):
+        self.prepare_learning()
+        self.alter_window.close()
+    def accept_learning_action(self):
         self.prepare_learning()
         self.alter_window.close()
     def reject_action(self):
@@ -239,7 +280,7 @@ class Gui:
 
         self.agent_ppo_details_window.show()
 
- 
+
 
     def set_default_agent_ppo_details(self):
         if settigns.game_settings.game_name == "cartpole":
