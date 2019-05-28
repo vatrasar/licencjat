@@ -7,7 +7,7 @@ from stable_baselines import PPO1
 from agents.baseAgent import BaseAgent
 from statistics import StatisticsBaseline
 import time
-
+import datetime
 
 class AgentPPO(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
@@ -38,7 +38,7 @@ class AgentPPO(BaseAgent):
         self.c2=agent_settings.c2
         self.clip_epslion=agent_settings.clip_epslion
         self.game_type=game_type
-
+        self.start_time=time.time()
         self.last_save_time=time.time()
         if is_agent_to_load:
             self.load_model(agent_to_load_directory)
@@ -90,6 +90,12 @@ class AgentPPO(BaseAgent):
         if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_episodes:
             self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
             self.done=True
+            output=open("./models/trenningResults.txt","w")
+            output.write("czas trening:"+str((time.time()-self.start_time)/3600)+"h \n")
+            output.write("liczba epizodów:"+str(_locals['episodes_so_far']) + "\n")
+            output.write("liczba kroków:" + str(_locals['timesteps_so_far']) + "\n")
+            output.close()
+
             return False
         if time.time()-self.last_save_time>60*10:
 

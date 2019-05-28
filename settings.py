@@ -42,9 +42,9 @@ class AgentSettings():
 
     def set_ppo_pong_default(self):
         self.algorithm = "Proximal Policy Optimization"
-        self.c1 = 1
+        self.c1 = 0.95
         self.c2 = 0.01
-        self.clip_epslion = 0.1
+        self.clip_epslion = 0.2
         self.gamma=0.99
 
 
