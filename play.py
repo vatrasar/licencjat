@@ -35,33 +35,36 @@ class Play(QThread):
         # get size of state and action from environment
         self.state_size = self.env.observation_space.shape[0]
         self.action_size = self.env.action_space.n
-        a = self.settigns.agent_settings
-        
-
-        if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
-            #statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
-            # self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,self.env,self.signal_done,self.signal_episode,statistics,self.settigns.game_settings,game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
-            self.agent =DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load)
+        self.a = self.settigns.agent_settings
+        self.agent_to_load_directory=agent_to_load_directory
+        self.is_agent_to_load=is_agent_to_load
+        self.settigns=settigns
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
-            self.agent = AgentPG(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
+            self.agent = AgentPG(self.state_size, self.action_size,self.a, self.is_agent_to_load, self.agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,agent_to_load_directory)
+            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
+                                  self.agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
-            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load, self.env, self.signal_done,
-                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
-
-
-
+            self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
+                                  self.env, self.signal_done,
+                                  self.signal_episode, statistics, self.settigns.game_settings,
+                                  game_type[self.settigns.game_settings.game_name], self.agent_to_load_directory,
+                                  self.settigns.game_settings.game_name)
     def __del__(self):
         self.wait()
 
 
 
     def run(self):
+
+        if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
+            # statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            # self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,self.env,self.signal_done,self.signal_episode,statistics,self.settigns.game_settings,game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
+            self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load)
 
 
 
