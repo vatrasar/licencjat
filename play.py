@@ -43,9 +43,6 @@ class Play(QThread):
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
             self.agent = AgentPG(self.state_size, self.action_size,self.a, self.is_agent_to_load, self.agent_to_load_directory)
 
-        if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
-                                  self.agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
@@ -66,6 +63,9 @@ class Play(QThread):
             # self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,self.env,self.signal_done,self.signal_episode,statistics,self.settigns.game_settings,game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
             self.agent = DQNAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load)
 
+        if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
+            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
+                                  self.agent_to_load_directory,self.settigns.game_settings.game_name)
 
 
         done_signal_emited=False
@@ -122,8 +122,14 @@ class Play(QThread):
                     break
                 episodes+=1
                 if self.is_tests and episodes>self.settigns.game_settings.max_episodes_number:
+                    self.signal_done.emit(episodes,
+                                          self.statistics.get_current_mean_score())
+
                     break
                 if not(self.is_tests) and steps>self.settigns.game_settings.max_steps_number:
+                    self.signal_done.emit(episodes,
+                                          self.statistics.get_current_mean_score())
+                    done_signal_emited = True
                     break
 
         else:

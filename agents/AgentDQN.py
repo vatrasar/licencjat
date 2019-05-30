@@ -210,7 +210,7 @@ class DQNAgentBaseline(BaseAgent):
 
         self.signal_episde.emit(_locals['episode_rewards'].__len__())
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['_']>self.game_settings.max_steps_number:
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['_']>=self.game_settings.max_steps_number:
             self.signal_done.emit(_locals['episode_rewards'].__len__(), self.statistic.get_current_mean_score())
             self.done=True
             output=open("./models/trenningResults.txt","w")

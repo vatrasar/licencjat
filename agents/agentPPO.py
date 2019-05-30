@@ -87,7 +87,7 @@ class AgentPPO(BaseAgent):
 
         self.signal_episde.emit(_locals['episodes_so_far'])
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_steps_number:
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['timesteps_so_far']>=self.game_settings.max_steps_number:
             self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
             self.done=True
             output=open("./models/trenningResults.txt","w")
