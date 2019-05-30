@@ -153,7 +153,7 @@ class Gui:
 
     def prepare_learning(self):
 
-        self.settigns.game_settings.max_episodes = self.learning_ui.episodes_number.value()
+        self.settigns.game_settings.max_steps_number = self.learning_ui.steps_number.value()
 
         self.settigns.game_settings.target_accuracy = self.learning_ui.stop_accuracy.value()
 
@@ -360,7 +360,7 @@ class Gui:
         self.agent_details_ui.replay_size_spin.setValue(self.settigns.agent_settings.replay_size)
         self.agent_details_ui.mini_batch_size_zpin.setValue(self.settigns.agent_settings.mini_batch)
         self.agent_details_ui.exploration_decay_spin.setValue(self.settigns.agent_settings.exploration_decay)
-        self.agent_details_ui.start_exploration_spin.setValue(self.settigns.agent_settings.start_exploration_value)
+
         self.agent_details_ui.learning_rate_spin.setValue(self.settigns.agent_settings.learning_rate)
         self.agent_details_ui.mnimal_exploration_spin.setValue( self.settigns.agent_settings.mnimal_exploration)
 
@@ -368,7 +368,7 @@ class Gui:
         self.settigns.agent_settings.replay_size=self.agent_details_ui.replay_size_spin.value()
         self.settigns.agent_settings.mini_batch=self.agent_details_ui.mini_batch_size_zpin.value()
         self.settigns.agent_settings.exploration_decay=self.agent_details_ui.exploration_decay_spin.value()
-        self.settigns.agent_settings.start_exploration_value=self.agent_details_ui.start_exploration_spin.value()
+
         self.settigns.agent_settings.learning_rate=self.agent_details_ui.learning_rate_spin.value()
         self.settigns.agent_settings.mnimal_exploration=self.agent_details_ui.mnimal_exploration_spin.value()
         self.agent_details_window.close()
@@ -400,7 +400,7 @@ class Gui:
 
 
         else:
-            self.settigns.agent_settings.algorithm="Strategia Gradientowa"
+
             if self.agent_creation_ui.algorithm_slection.currentText()=="Deep Q-Learning":
                 self.settigns.agent_settings.algorithm = "Deep Q-Learning"
                 self.settigns.agent_settings.set_dqn_default()

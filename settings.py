@@ -23,6 +23,13 @@ class AgentSettings():
         self.start_exploration_value = 1
         self.learning_rate = 0.001
         self.mnimal_exploration = 0.01
+        # self.gamma = 0.99
+        # self.replay_size = 50000
+        # self.mini_batch = 32
+        # self.exploration_decay = 0.1
+        # self.start_exploration_value = 1
+        # self.learning_rate = 0.0005
+        # self.mnimal_exploration = 0.02
 
     def set_pg_default(self):
         self.gamma=0.95
@@ -49,8 +56,9 @@ class AgentSettings():
 
 
 class GameSettings():
-    def __init__(self,max_episodes=1000,accuracy=90,episodes_batch_size=10):
-        self.max_episodes = max_episodes
+    def __init__(self,max_steps_number=25000,accuracy=90,episodes_batch_size=10,max_episodes_number=3):
+        self.max_steps_number = max_steps_number
+        self.max_episodes_number = max_episodes_number
         self.target_accuracy=accuracy
         self.episodes_batch_size=episodes_batch_size
         self.game_name="Pong"

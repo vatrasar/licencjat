@@ -26,17 +26,17 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Liczba epizdow</string>
+         <string>Maksymalna liczba ruchów</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="episodes_number">
+       <widget class="QSpinBox" name="steps_number">
         <property name="minimum">
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>30000000</number>
+         <number>990000000</number>
         </property>
        </widget>
       </item>

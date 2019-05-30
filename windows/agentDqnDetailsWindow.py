@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.learning_rate_spin = QtWidgets.QDoubleSpinBox(self.centralwidget)
-        self.learning_rate_spin.setDecimals(3)
+        self.learning_rate_spin.setDecimals(6)
         self.learning_rate_spin.setMinimum(0.0)
         self.learning_rate_spin.setMaximum(1.0)
         self.learning_rate_spin.setObjectName("learning_rate_spin")
@@ -85,3 +85,4 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Fragment teningu w którym jest eksploracja"))
         self.label_5.setText(_translate("MainWindow", "Mnimalny poziom eksploracji"))
         self.default_settings_button.setText(_translate("MainWindow", "Ustawnienia domyslne dla algorytmu"))
+

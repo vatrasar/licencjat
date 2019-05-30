@@ -79,7 +79,7 @@ class AgentPPO(BaseAgent):
 
     def train_model(self):
 
-        self.model.learn(total_timesteps=2500000,callback=self.callback)
+        self.model.learn(total_timesteps=self.game_settings.max_steps_number,callback=self.callback)
 
 
     def callback(self,_locals, _globals):
@@ -87,7 +87,7 @@ class AgentPPO(BaseAgent):
 
         self.signal_episde.emit(_locals['episodes_so_far'])
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_episodes:
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_steps_number:
             self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
             self.done=True
             output=open("./models/trenningResults.txt","w")

@@ -8,10 +8,11 @@ from settings import AgentSettings
 from agents.baseAgent import BaseAgent
 from statistics import StatisticsBaseline
 import time
-from stable_baselines.common.policies import MlpPolicy
+
+from stable_baselines.deepq.policies import MlpPolicy
 from stable_baselines.common.policies import MlpLstmPolicy
 from stable_baselines.common.cmd_util import make_atari_env
-from stable_baselines.common.policies import CnnPolicy
+from stable_baselines.deepq.policies import CnnPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
 from stable_baselines import DQN
 
@@ -30,7 +31,7 @@ class DQNAgent:
         # These are hyper parameters for the DQN
         self.discount_factor = agent_settings.gamma
         self.learning_rate = agent_settings.learning_rate
-        self.epsilon = 1
+        self.epsilon = 0.99
         self.epsilon_decay = agent_settings.exploration_decay
         self.epsilon_min = agent_settings.mnimal_exploration
         self.batch_size = agent_settings.mini_batch
@@ -205,17 +206,17 @@ class DQNAgentBaseline(BaseAgent):
 
 
     def callback(self,_locals, _globals):
-        self.statistic.append_score(_locals['rewbuffer'],_locals['episodes_so_far'])
+        self.statistic.append_score(_locals['episode_rewards'],_locals['episode_rewards'].__len__())
 
-        self.signal_episde.emit(_locals['episodes_so_far'])
+        self.signal_episde.emit(_locals['episode_rewards'].__len__())
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_episodes:
-            self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['_']>self.game_settings.max_steps_number:
+            self.signal_done.emit(_locals['episode_rewards'].__len__(), self.statistic.get_current_mean_score())
             self.done=True
             output=open("./models/trenningResults.txt","w")
             output.write("czas trening:"+str((time.time()-self.start_time)/3600)+"h \n")
-            output.write("liczba epizodów:"+str(_locals['episodes_so_far']) + "\n")
-            output.write("liczba kroków:" + str(_locals['timesteps_so_far']) + "\n")
+            output.write("liczba epizodów:"+str(_locals['episode_rewards'].__len__()) + "\n")
+            output.write("liczba kroków:" + str(_locals['_']) + "\n")
             output.close()
 
             return False
