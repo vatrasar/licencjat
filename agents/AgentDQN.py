@@ -5,7 +5,15 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
 from settings import AgentSettings
-
+from agents.baseAgent import BaseAgent
+from statistics import StatisticsBaseline
+import time
+from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.common.policies import MlpLstmPolicy
+from stable_baselines.common.cmd_util import make_atari_env
+from stable_baselines.common.policies import CnnPolicy
+from stable_baselines.common.vec_env import DummyVecEnv
+from stable_baselines import DQN
 
 
 class DQNAgent:
@@ -22,11 +30,12 @@ class DQNAgent:
         # These are hyper parameters for the DQN
         self.discount_factor = agent_settings.gamma
         self.learning_rate = agent_settings.learning_rate
-        self.epsilon = agent_settings.start_exploration_value
+        self.epsilon = 1
         self.epsilon_decay = agent_settings.exploration_decay
         self.epsilon_min = agent_settings.mnimal_exploration
         self.batch_size = agent_settings.mini_batch
         self.train_start = 1000
+
         # create replay memory using deque
         self.memory = deque(maxlen=agent_settings.replay_size)
 
@@ -115,5 +124,105 @@ class DQNAgent:
     def save_model(self):
         self.model.save_weights("./models/agent.h5")
 
-class DQNAgentBaseline():
-    pass
+
+class DQNAgentBaseline(BaseAgent):
+    def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
+                 statistic: StatisticsBaseline, game_settings, game_type, agent_to_load_directory, game_name):
+        """
+
+        :param state_size:
+        :param action_size:
+        :param agent_settings:
+        :param is_agent_to_load:
+        :param env:
+        :param signal_done:
+        :param signal_episode:
+        :param statistic:
+        :param game_settings:
+        :param game_type: can be box or atari
+        """
+        super().__init__(state_size, action_size, agent_settings, is_agent_to_load, game_name)
+        self.env = env
+
+        self.is_baseline = True
+        self.signal_done = signal_done
+        self.signal_episde = signal_episode
+        self.statistic = statistic
+        self.game_settings = game_settings
+
+
+
+        self.gamma = agent_settings.gamma
+        self.learning_rate = agent_settings.learning_rate
+        self.epsilon_decay = agent_settings.exploration_decay
+        self.epsilon_min = agent_settings.mnimal_exploration
+        self.batch_size = agent_settings.mini_batch
+        self.replay_size=agent_settings.replay_size
+
+
+
+        self.game_type = game_type
+        self.start_time = time.time()
+        self.last_save_time = time.time()
+        if is_agent_to_load:
+            self.load_model(agent_to_load_directory)
+        else:
+            self.build_model()
+    def build_model(self):
+
+        if self.game_type=="box":
+            self.env = DummyVecEnv([lambda: self.env])
+            self.model = DQN(MlpPolicy, self.env, verbose=0,gamma=self.gamma,exploration_fraction=self.epsilon_decay,exploration_final_eps=self.epsilon_min,learning_rate=self.learning_rate,buffer_size=self.replay_size,batch_size=self.batch_size)
+        if self.game_type=="atari":
+
+            self.model = DQN(CnnPolicy, self.env, verbose=1,gamma=self.gamma,exploration_fraction=self.epsilon_decay,exploration_final_eps=self.epsilon_min,learning_rate=self.learning_rate,buffer_size=self.replay_size,batch_size=self.batch_size)
+
+    def update_target_model(self):
+        super().update_target_model()
+
+    def get_action(self, state):
+        action, _states = self.model.predict(state)
+        return action
+
+    def append_sample(self, state, action, reward, next_state, done):
+        super().append_sample(state, action, reward, next_state, done)
+
+    def save_model(self,file_name="./models/agentDQN"):
+        self.model.save(file_name)
+        out=open(file_name+".txt","w")
+        out.write(self.game_name)
+        out.close()
+
+    def load_model(self,agent_to_load_directory):
+        if  agent_to_load_directory=="":
+            self.model=DQN.load("./models/agentDQN.pkl",env=self.env)
+        else:
+            self.model=DQN.load(agent_to_load_directory,env=self.env)
+
+    def train_model(self):
+
+        self.model.learn(total_timesteps=60000,callback=self.callback)
+
+
+    def callback(self,_locals, _globals):
+        self.statistic.append_score(_locals['rewbuffer'],_locals['episodes_so_far'])
+
+        self.signal_episde.emit(_locals['episodes_so_far'])
+
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['episodes_so_far']>self.game_settings.max_episodes:
+            self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
+            self.done=True
+            output=open("./models/trenningResults.txt","w")
+            output.write("czas trening:"+str((time.time()-self.start_time)/3600)+"h \n")
+            output.write("liczba epizodów:"+str(_locals['episodes_so_far']) + "\n")
+            output.write("liczba kroków:" + str(_locals['timesteps_so_far']) + "\n")
+            output.close()
+
+            return False
+        if time.time()-self.last_save_time>60*10:
+
+
+            self.last_save_time=time.time()
+
+            self.save_model("./models/agentDQNtemp")
+        return True

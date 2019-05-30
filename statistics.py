@@ -36,7 +36,12 @@ class Statistics():
         return last_score_batch_table.mean()
 
     def get_current_mean_score(self):
-        if self.batches_means.__len__()!=0:
+        if self.batches_means.__len__()!=0 and self.batches_means.__len__()!=1:
+            return self.batches_means[-1]
+        elif self.batches_means.__len__()==1:
+            self.last_score_batch.append(self.batches_means[0])
+            mean_from_batch = self.get_last_score_batch_mean_score()
+            self.batches_means.append(mean_from_batch)
             return self.batches_means[-1]
         else:
             return -9999999
