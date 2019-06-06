@@ -15,6 +15,8 @@ import windows.PGSettingsWindow
 import windows.agentA2cDetails
 import windows.agentPPODetails
 import windows.alterWindow
+
+import windows.batchSizeWindow
 from PyQt5.QtWidgets import  QFileDialog
 
 
@@ -33,6 +35,23 @@ class Gui:
         self.ui.action_game_selection.triggered.connect(self.open_game_selection_window)
         self.ui.action_test_settings_open.triggered.connect(self.open_test_settings_window)
         self.ui.action_load_agent.triggered.connect(self.open_load_agent_dialog)
+        self.ui.action_save_graph.triggered.connect(self.open_chanege_batch_size_dialog)
+
+    def open_chanege_batch_size_dialog(self):
+        self.batch_window = QtWidgets.QMainWindow()
+        self.batch_ui = windows.batchSizeWindow.Ui_MainWindow()
+        self.batch_ui.setupUi(self.batch_window)
+        self.batch_ui.buttonBox.accepted.connect(self.accept_batch_size)
+        self.batch_ui.buttonBox.rejected.connect(self.reject_test_settings)
+        self.batch_ui.batch_size.setValue(self.settigns.curve_batch_size)
+        self.batch_window.show()
+
+    def accept_batch_size(self):
+        self.settigns.curve_batch_size=self.batch_ui.batch_size.value()
+        self.batch_window.close()
+    def reject_batch_size(self):
+        self.batch_window.close()
+
 
     def open_load_agent_dialog(self):
         options = QFileDialog.Options()
@@ -113,8 +132,13 @@ class Gui:
         self.ui.curve_view.setPixmap(pixmap)
         self.main_window.repaint()
 
-    def update_infromation_about_episode_number(self,episode_number):
+    def update_infromation_about_episode_number(self,episode_number,reward_mean,last_reward,steps):
         self.ui.information_label.setText("Trwa uczenie:epizod "+str(episode_number))
+        reward_mean=reward_mean if reward_mean!=-9999999 else "czekiwanie"
+        self.ui.mean_reward_label.setText("Średnia nagroda: "+str(reward_mean))
+        self.ui.label.setText("ostatnia nagroda: "+str(last_reward))
+        self.ui.steps_label.setText("Liczba kroków: "+str(steps))
+
 
     def update_infromation_about_episode_number_in_test(self,episode_number):
         self.ui.information_label.setText("Trwa testowanie:epizod "+str(episode_number))
@@ -175,7 +199,7 @@ class Gui:
 
     def prepare_tests(self):
 
-        self.settigns.game_settings.max_episodes = self.test_settings_ui.spinBox.value()
+        self.settigns.game_settings.max_episodes_number = self.test_settings_ui.spinBox.value()
 
         if self.test_settings_ui.saved_agent_radio.isChecked():
             loaded_agent_directory=self.loaded_agent_directory
@@ -192,13 +216,14 @@ class Gui:
 
         self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
-        self.game.signal_done.connect(self.learning_done)
+        self.game.signal_done.connect(self.test_done)
 
 
         self.ui.information_label.setText("Testy:epizod 0")
 
 
         self.game.start()
+
 
 
     def open_alter_windows(self, aleter_text,is_test):

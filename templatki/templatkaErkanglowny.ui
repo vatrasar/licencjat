@@ -28,6 +28,19 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="0" alignment="Qt::AlignHCenter">
+     <widget class="QLabel" name="steps_label">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Liczba kroków: 0</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="information_label">
       <property name="maximumSize">
@@ -53,6 +66,32 @@
       </property>
      </widget>
     </item>
+    <item row="2" column="0" alignment="Qt::AlignHCenter">
+     <widget class="QLabel" name="mean_reward_label">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Średnia nagroda: 0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" alignment="Qt::AlignHCenter">
+     <widget class="QLabel" name="label">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>ostatnia nagroda: 0</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -71,7 +110,6 @@
     <addaction name="action_load_agent"/>
     <addaction name="action_create_agent"/>
     <addaction name="action_agent_edit"/>
-    <addaction name="action_agent_save"/>
    </widget>
    <widget class="QMenu" name="menu_environment">
     <property name="title">
@@ -150,7 +188,7 @@
   </action>
   <action name="action_save_graph">
    <property name="text">
-    <string>Zapisz</string>
+    <string>Epizody do średniej</string>
    </property>
   </action>
   <action name="action_game_selection">

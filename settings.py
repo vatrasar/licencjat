@@ -90,11 +90,12 @@ class AgentSettings():
 
 
 class GameSettings():
-    def __init__(self,max_steps_number=25000,accuracy=90,episodes_batch_size=10,max_episodes_number=3):
+    def __init__(self,max_steps_number=25000,accuracy=90,max_episodes_number=3):
         self.max_steps_number = max_steps_number
         self.max_episodes_number = max_episodes_number
+
         self.target_accuracy=accuracy
-        self.episodes_batch_size=episodes_batch_size
+
         self.game_name="Pong"
 
 
@@ -107,6 +108,7 @@ class Settings():
     def __init__(self,algorithm="Deep Q-Learning"):
         self.agent_settings=AgentSettings(algorithm)
         self.game_settings=GameSettings()
+        self.curve_batch_size = 10 #number of episodes after curve is plot
         self.conf_defaults={
             "atari": {
                 "Deep Q-Learning": self.agent_settings.set_dqn_atari_default,

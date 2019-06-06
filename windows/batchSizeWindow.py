@@ -43,3 +43,5 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Opcje wykresu"))
         self.label.setText(_translate("MainWindow", "Liczba epizodów po której aktualizowany jest wykres"))
 
+
+

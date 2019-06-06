@@ -161,7 +161,7 @@ class DQNAgentBaseline(BaseAgent):
         self.replay_size=agent_settings.replay_size
 
 
-
+        self.last_episode_emited=0
         self.game_type = game_type
         self.start_time = time.time()
         self.last_save_time = time.time()
@@ -208,9 +208,11 @@ class DQNAgentBaseline(BaseAgent):
     def callback(self,_locals, _globals):
         self.statistic.append_score(_locals['episode_rewards'],_locals['episode_rewards'].__len__())
 
-        self.signal_episde.emit(_locals['episode_rewards'].__len__())
+        if _locals['episode_rewards'].__len__()!=self.last_episode_emited and _locals['episode_rewards'].__len__()>1:
+            self.signal_episde.emit(_locals['episode_rewards'].__len__()-1,self.statistic.get_current_mean_score(),_locals['episode_rewards'][-2],_locals['_'])
+            self.last_episode_emited=_locals['episode_rewards'].__len__()
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['_']>=self.game_settings.max_steps_number:
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['_']+1>=self.game_settings.max_steps_number:
             self.signal_done.emit(_locals['episode_rewards'].__len__(), self.statistic.get_current_mean_score())
             self.done=True
             output=open("./models/trenningResults.txt","w")

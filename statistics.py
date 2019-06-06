@@ -13,7 +13,7 @@ class Statistics():
         """
         self.episodes_batch_size=episodes_batch_size
 
-        self.score_list=deque(maxlen=episodes_batch_size)
+        self.score_list=[]
         self.last_score_batch=[]
         self.batches_means=[]
         self.signal_plot=signal
@@ -52,12 +52,13 @@ class StatisticsBaseline(Statistics):
     def __init__(self, episodes_batch_size, signal):
         super().__init__(episodes_batch_size, signal)
         self.last_plot_episode=0
+        self.score_list=deque(maxlen=episodes_batch_size)
 
     def append_score(self, score, current_episode_number=0):
         score=np.asarray(score)
 
-        if score.size>self.episodes_batch_size and current_episode_number-self.last_plot_episode>self.episodes_batch_size:
-            self.batches_means.append(score[-self.episodes_batch_size:-1].mean())
+        if score.size>self.episodes_batch_size+1 and current_episode_number-self.last_plot_episode>self.episodes_batch_size+1:
+            self.batches_means.append(score[-self.episodes_batch_size-1:-2].mean())
             self.last_plot_episode=current_episode_number
             plt.plot(np.arange(self.batches_means.__len__()), self.batches_means)
             plt.savefig('new_curve.png')

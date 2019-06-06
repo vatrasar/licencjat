@@ -25,12 +25,12 @@ class Play(QThread):
 
 
     signal_plot = pyqtSignal()
-    signal_episode = pyqtSignal("int")
+    signal_episode = pyqtSignal("int","double","double","int")
     signal_done=pyqtSignal("int","int")
     def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load):
         QThread.__init__(self)
         self.settigns=settigns
-        self.statistics=Statistics(10,self.signal_plot)
+        self.statistics=Statistics(settigns.curve_batch_size,self.signal_plot)
         self.render=render
         self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
@@ -56,7 +56,7 @@ class Play(QThread):
 
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
-            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
 
 
             self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
@@ -124,9 +124,10 @@ class Play(QThread):
                     if done:
                         # every episode update the target model to be same with model
                         self.agent.update_target_model()
-                        self.signal_episode.emit(episodes)
+
                         # every episode, plot the play time
                         score = score if score == 500 else score + 100
+                        self.signal_episode.emit(episodes, self.statistics.get_current_mean_score(),score,steps)
                         self.statistics.append_score(score)
                 if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.is_tests):
                     self.signal_done.emit(
@@ -163,12 +164,12 @@ class PlayPong(QThread):
 
 
     signal_plot = pyqtSignal()
-    signal_episode = pyqtSignal("int")
+    signal_episode = pyqtSignal("int","double","double","int")
     signal_done=pyqtSignal("int","int")
     def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load):
         QThread.__init__(self)
         self.settigns=settigns
-        self.statistics=Statistics(10,self.signal_plot)
+        self.statistics=Statistics(self.settigns.curve_batch_size,self.signal_plot)
         self.render=render
         self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
@@ -188,19 +189,19 @@ class PlayPong(QThread):
 
 
         if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
-            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = DQNAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,self.env,self.signal_done,self.signal_episode,statistics,self.settigns.game_settings,game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
             self.agent = AgentPGPong(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
                                   self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
-            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
                                   self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
 
@@ -216,7 +217,7 @@ class PlayPong(QThread):
 
         self.agent.start_time=time.time()
 
-        episodes = 1
+        episodes = 0
         steps = 0
         done_signal_emited=False
 
@@ -252,22 +253,25 @@ class PlayPong(QThread):
                     steps += 1
                     if done:
                         # every episode update the target model to be same with model
-                        self.agent.train_model()
-                        self.signal_episode.emit(episodes)
+                        if not(self.agent.is_baseline):
+                            self.agent.train_model()
+                        self.signal_episode.emit(episodes, self.statistics.get_current_mean_score(), score, steps)
+
                         # every episode, plot the play time
                         # score = score if score == 500 else score + 100
                         self.statistics.append_score(score)
                 if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not (
                 self.is_tests):
                     self.signal_done.emit(
-                        episodes + 1, self.statistics.get_current_mean_score())
+                        episodes, self.statistics.get_current_mean_score())
                     done_signal_emited = True
 
                     break
                 episodes += 1
-                if self.is_tests and episodes > self.settigns.game_settings.max_episodes_number:
+                if self.is_tests and episodes >= self.settigns.game_settings.max_episodes_number:
                     self.signal_done.emit(episodes,
                                           self.statistics.get_current_mean_score())
+                    done_signal_emited = True
 
                     break
                 if not (self.is_tests) and steps > self.settigns.game_settings.max_steps_number:
