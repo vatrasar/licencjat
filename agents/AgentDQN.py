@@ -202,7 +202,7 @@ class DQNAgentBaseline(BaseAgent):
 
     def train_model(self):
 
-        self.model.learn(total_timesteps=60000,callback=self.callback)
+        self.model.learn(total_timesteps=self.game_settings.max_steps_number,callback=self.callback)
 
 
     def callback(self,_locals, _globals):

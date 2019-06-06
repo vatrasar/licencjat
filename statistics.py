@@ -2,6 +2,7 @@ import numpy as np
 from PyQt5.QtCore import pyqtSignal
 import matplotlib.pyplot as plt
 import numpy as np
+from collections import deque
 class Statistics():
 
     signal_plot = pyqtSignal()
@@ -12,7 +13,7 @@ class Statistics():
         """
         self.episodes_batch_size=episodes_batch_size
 
-        self.score_list=[]
+        self.score_list=deque(maxlen=episodes_batch_size)
         self.last_score_batch=[]
         self.batches_means=[]
         self.signal_plot=signal
@@ -58,6 +59,15 @@ class StatisticsBaseline(Statistics):
         if score.size>self.episodes_batch_size and current_episode_number-self.last_plot_episode>self.episodes_batch_size:
             self.batches_means.append(score[-self.episodes_batch_size:-1].mean())
             self.last_plot_episode=current_episode_number
+            plt.plot(np.arange(self.batches_means.__len__()), self.batches_means)
+            plt.savefig('new_curve.png')
+            self.signal_plot.emit()
+
+    def append_a2c(self, score, current_episode_number=0):
+        self.score_list.append(score)
+        if current_episode_number%self.episodes_batch_size==0 and self.score_list.__len__()!=0:
+            scores=np.asarray(self.score_list)
+            self.batches_means.append(scores.mean())
             plt.plot(np.arange(self.batches_means.__len__()), self.batches_means)
             plt.savefig('new_curve.png')
             self.signal_plot.emit()

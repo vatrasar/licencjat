@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
         self.learning_rate_spin = QtWidgets.QDoubleSpinBox(self.centralwidget)
-        self.learning_rate_spin.setDecimals(3)
+        self.learning_rate_spin.setDecimals(8)
         self.learning_rate_spin.setMinimum(0.0)
         self.learning_rate_spin.setMaximum(1.0)
         self.learning_rate_spin.setObjectName("learning_rate_spin")

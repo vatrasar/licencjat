@@ -273,7 +273,7 @@ class Gui:
 
         self.agent_ppo_details_ui.buttonBox.accepted.connect(self.accept_new_agent_ppo_details_settings)
         self.agent_ppo_details_ui.buttonBox.rejected.connect(self.reject_new_agent_ppo_details_settings)
-        self.agent_ppo_details_ui.default_settings_button.clicked.connect(self.set_default_agent_ppo_details)
+        self.agent_ppo_details_ui.default_settings_button.clicked.connect(self.set_default_agent_details)
         self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
         self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
         self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
@@ -283,10 +283,11 @@ class Gui:
 
 
     def set_default_agent_ppo_details(self):
-        if settigns.game_settings.game_name == "cartpole":
-            self.settigns.agent_settings.set_ppo_cartpole_default()
-        if settigns.game_settings.game_name == "Pong":
-            self.settigns.agent_settings.set_ppo_pong_default()
+
+        # if settigns.game_settings.game_name == "cartpole":
+        #     self.settigns.agent_settings.set_ppo_cartpole_default()
+        # if settigns.game_settings.game_name == "Pong":
+        #     self.settigns.agent_settings.set_ppo_pong_default()
         self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
         self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
         self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
@@ -311,12 +312,14 @@ class Gui:
         self.agent_a2c_details_ui.default_settings_button.clicked.connect(self.set_default_agent_a2c_details)
         self.agent_a2c_details_ui.actor_learning_rate_spin.setValue(settigns.agent_settings.actor_lr)
         self.agent_a2c_details_ui.critic_learning_rate_spin.setValue(settigns.agent_settings.critic_lr)
+        self.agent_a2c_details_ui.etropy_spin.setValue(settigns.agent_settings.c2)
 
         self.agent_a2c_details_window.show()
 
     def accept_new_agent_a2c_details_settings(self):
         self.settigns.agent_settings.actor_lr=self.agent_a2c_details_ui.actor_learning_rate_spin.value()
         self.settigns.agent_settings.critic_lr=self.agent_a2c_details_ui.critic_learning_rate_spin.value()
+        self.settigns.agent_settings.c1=self.agent_a2c_details_ui.etropy_spin.value()
         self.agent_a2c_details_window.close()
 
 
@@ -324,10 +327,10 @@ class Gui:
         self.agent_a2c_details_window.close()
 
     def set_default_agent_a2c_details(self):
-        self.settigns.agent_settings.set_a2c_cartpole_default()
+
         self.agent_a2c_details_ui.actor_learning_rate_spin.setValue(settigns.agent_settings.actor_lr)
         self.agent_a2c_details_ui.critic_learning_rate_spin.setValue(settigns.agent_settings.critic_lr)
-
+        self.agent_a2c_details_ui.etropy_spin.setValue(settigns.agent_settings.c2)
 
     def open_pg_details_windows(self):
 
@@ -337,8 +340,8 @@ class Gui:
 
         self.agent_pg_details_ui.buttonBox.accepted.connect(self.accept_new_agent_pg_details_settings)
         self.agent_pg_details_ui.buttonBox.rejected.connect(self.reject_new_agent_pg_details_settings)
-        self.agent_pg_details_ui.default_settings_button.clicked.connect(self.set_default_agent_pg_details)
-
+        self.agent_pg_details_ui.default_settings_button.clicked.connect(self.set_default_agent_details)
+        self.set_default_agent_pg_details()
 
         self.agent_pg_details_window.show()
 
@@ -350,20 +353,32 @@ class Gui:
 
         self.agent_pg_details_window.close()
     def set_default_agent_pg_details(self):
-        self.agent_pg_details_ui.learning_rate_spin.setValue(0.01)
-        self.settigns.agent_settings.gamma=0.95
+        self.agent_pg_details_ui.learning_rate_spin.setValue(self.settigns.agent_settings.learning_rate)
+
 
     def reject_new_agent_settings(self):
         self.agent_creation_window.close()
 
     def set_current_values_in_details_windows(self):
+
+        if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
+            self.set_current_in_details_windows_dqn()
+        if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
+            self.set_default_agent_pg_details()
+        if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
+            self.set_default_agent_a2c_details()
+        if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
+            self.set_default_agent_ppo_details()
+
+
+    def set_current_in_details_windows_dqn(self):
+
         self.agent_details_ui.replay_size_spin.setValue(self.settigns.agent_settings.replay_size)
         self.agent_details_ui.mini_batch_size_zpin.setValue(self.settigns.agent_settings.mini_batch)
         self.agent_details_ui.exploration_decay_spin.setValue(self.settigns.agent_settings.exploration_decay)
 
         self.agent_details_ui.learning_rate_spin.setValue(self.settigns.agent_settings.learning_rate)
-        self.agent_details_ui.mnimal_exploration_spin.setValue( self.settigns.agent_settings.mnimal_exploration)
-
+        self.agent_details_ui.mnimal_exploration_spin.setValue(self.settigns.agent_settings.mnimal_exploration)
     def accept_new_agent_details_settings(self):
         self.settigns.agent_settings.replay_size=self.agent_details_ui.replay_size_spin.value()
         self.settigns.agent_settings.mini_batch=self.agent_details_ui.mini_batch_size_zpin.value()
@@ -379,45 +394,51 @@ class Gui:
     def set_default_agent_details(self):
 
         if not (self.agent_creation_window.isVisible()):
-            if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
-                self.settigns.agent_settings.set_dqn_default()
 
-                self.set_current_values_in_details_windows()
-
-            if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
-                self.settigns.agent_settings.set_pg_default()
-
-                self.set_default_agent_pg_details()
-            if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
-                self.set_default_agent_a2c_details()
-                self.settigns.agent_settings.set_a2c_default()
-            if  self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
-                self.set_default_agent_ppo_details()
-                if settigns.game_settings.game_name=="cartpole":
-                    self.settigns.agent_settings.set_ppo_cartpole_default()
-                if settigns.game_settings.game_name=="Pong":
-                    self.settigns.agent_settings.set_ppo_pong_default()
+            self.settigns.set_default_for_algorithm(self.settigns.agent_settings.algorithm)
+            self.set_current_values_in_details_windows()
+            # if self.settigns.agent_settings.algorithm=="Deep Q-Learning":
+            #     self.settigns.agent_settings.set_dqn_default()
+            #
+            #     self.set_current_values_in_details_windows()
+            #
+            # if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
+            #     self.settigns.agent_settings.set_pg_default()
+            #
+            #     self.set_default_agent_pg_details()
+            # if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
+            #     self.set_default_agent_a2c_details()
+            #     self.settigns.agent_settings.set_a2c_default()
+            # if  self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
+            #     self.set_default_agent_ppo_details()
+            #     self.settigns.set_default_for_algorithm(self.agent_creation_ui.algorithm_slection.currentText())
+            #     if settigns.game_settings.game_name=="cartpole":
+            #         self.settigns.agent_settings.set_ppo_cartpole_default()
+            #     if settigns.game_settings.game_name=="Pong":
+            #         self.settigns.agent_settings.set_ppo_pong_default()
 
 
         else:
 
-            if self.agent_creation_ui.algorithm_slection.currentText()=="Deep Q-Learning":
-                self.settigns.agent_settings.algorithm = "Deep Q-Learning"
-                self.settigns.agent_settings.set_dqn_default()
-                self.set_current_values_in_agent_creation_form()
-            if self.agent_creation_ui.algorithm_slection.currentText() == "Strategia Gradientowa":
-                self.settigns.agent_settings.algorithm = "Strategia Gradientowa"
-                self.settigns.agent_settings.set_pg_default()
-                self.set_current_values_in_agent_creation_form()
-            if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
-                self.settigns.agent_settings.set_a2c_cartpole_default()
-                self.set_current_values_in_agent_creation_form()
-            if self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
-                if settigns.game_settings.game_name == "cartpole":
-                    self.settigns.agent_settings.set_ppo_cartpole_default()
-                if settigns.game_settings.game_name == "Pong":
-                    self.settigns.agent_settings.set_ppo_pong_default()
-                self.set_current_values_in_agent_creation_form()
+            self.settigns.set_default_for_algorithm(self.agent_creation_ui.algorithm_slection.currentText())
+            self.set_current_values_in_agent_creation_form()
+            # if self.agent_creation_ui.algorithm_slection.currentText()=="Deep Q-Learning":
+            #     self.settigns.agent_settings.algorithm = "Deep Q-Learning"
+            #     self.settigns.agent_settings.set_dqn_default()
+            #     self.set_current_values_in_agent_creation_form()
+            # if self.agent_creation_ui.algorithm_slection.currentText() == "Strategia Gradientowa":
+            #     self.settigns.agent_settings.algorithm = "Strategia Gradientowa"
+            #     self.settigns.agent_settings.set_pg_default()
+            #     self.set_current_values_in_agent_creation_form()
+            # if self.agent_creation_ui.algorithm_slection.currentText() == "Advantage Actor Critic":
+            #     self.settigns.agent_settings.set_a2c_cartpole_default()
+            #     self.set_current_values_in_agent_creation_form()
+            # if self.agent_creation_ui.algorithm_slection.currentText() == "Proximal Policy Optimization":
+            #     if settigns.game_settings.game_name == "cartpole":
+            #         self.settigns.agent_settings.set_ppo_cartpole_default()
+            #     if settigns.game_settings.game_name == "Pong":
+            #         self.settigns.agent_settings.set_ppo_pong_default()
+            #     self.set_current_values_in_agent_creation_form()
 
 
     def open_dqn_details_windows(self):

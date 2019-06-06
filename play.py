@@ -8,13 +8,16 @@ from PyQt5.QtCore import pyqtSignal
 from statistics import Statistics
 from keras import backend
 from agents.agentPG import AgentPG
+from agents.agentPG import AgentPGPong
 from agents.agentA2C import A2CAgent
+from agents.agentA2C import A2CAgentBaseline
 from agents.agentPPO import AgentPPO
 from statistics import StatisticsBaseline
 from conf import game_type
 from stable_baselines.common.cmd_util import make_atari_env
 from stable_baselines.common.vec_env import VecFrameStack
 import time
+from stable_baselines.common.vec_env import SubprocVecEnv
 import datetime
 
 
@@ -39,6 +42,14 @@ class Play(QThread):
         self.agent_to_load_directory=agent_to_load_directory
         self.is_agent_to_load=is_agent_to_load
         self.settigns=settigns
+        # if settigns.agent_settings.algorithm == "Advantage Actor Critic":
+        #     if not(is_tests):
+        #         n_cpu = 8
+        #         self.env = SubprocVecEnv([lambda: gym.make('CartPole-v1') for i in range(n_cpu)])
+        #     statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+        #     self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
+        #                           self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
+
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
             self.agent = AgentPG(self.state_size, self.action_size,self.a, self.is_agent_to_load, self.agent_to_load_directory)
@@ -46,6 +57,8 @@ class Play(QThread):
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+
+
             self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
                                   self.env, self.signal_done,
                                   self.signal_episode, statistics, self.settigns.game_settings,
@@ -66,6 +79,7 @@ class Play(QThread):
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
             self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
                                   self.agent_to_load_directory,self.settigns.game_settings.game_name)
+
 
 
         done_signal_emited=False
@@ -158,9 +172,15 @@ class PlayPong(QThread):
         self.render=render
         self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
-        self.env = make_atari_env('PongNoFrameskip-v4', num_env=1, seed=0)
+        if "Strategia Gradientowa"==self.settigns.agent_settings.algorithm:
+            self.env = gym.make("Pong-v0")
 
-        self.env = VecFrameStack(self.env, n_stack=4)
+
+        else:
+            self.env = make_atari_env('PongNoFrameskip-v4', num_env=1, seed=0)
+            self.env = VecFrameStack(self.env, n_stack=4)
+
+
         # get size of state and action from environment
         self.state_size = self.env.observation_space.shape[0]
         self.action_size = self.env.action_space.n
@@ -169,13 +189,15 @@ class PlayPong(QThread):
 
         if self.settigns.agent_settings.algorithm == "Deep Q-Learning":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
-            self.agent = DQNAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load)
+            self.agent = DQNAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,self.env,self.signal_done,self.signal_episode,statistics,self.settigns.game_settings,game_type[settigns.game_settings.game_name],agent_to_load_directory,self.settigns.game_settings.game_name)
 
         if self.settigns.agent_settings.algorithm == "Strategia Gradientowa":
-            self.agent = AgentPG(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
+            self.agent = AgentPGPong(self.state_size, self.action_size, a, is_agent_to_load,agent_to_load_directory)
 
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
-            self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, is_agent_to_load,agent_to_load_directory)
+            statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+            self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
@@ -194,19 +216,17 @@ class PlayPong(QThread):
 
         self.agent.start_time=time.time()
 
+        episodes = 1
+        steps = 0
         done_signal_emited=False
 
         if not(self.agent.is_baseline) or self.is_tests==True:
 
-
-
-            for e in range(self.settigns.game_settings.max_episodes_number):
+            while True:
                 done = False
                 score = 0
                 state = self.env.reset()
-                if not (self.agent.is_baseline):
-                    #baseline is here during tests
-                    state = np.reshape(state, [1, self.state_size])
+
 
                 while not done:
                     if self.render:
@@ -226,33 +246,43 @@ class PlayPong(QThread):
                     # save the sample <s, a, r, s'> to the replay memory
                     self.agent.append_sample(state, action, reward, next_state, done)
                     # every time step do the training
-                    if not (self.agent.is_baseline):#baseline is here during tests
-                        self.agent.train_model()
+
                     score += reward
                     state = next_state
-
+                    steps += 1
                     if done:
                         # every episode update the target model to be same with model
-                        self.agent.update_target_model()
-                        self.signal_episode.emit(e)
+                        self.agent.train_model()
+                        self.signal_episode.emit(episodes)
                         # every episode, plot the play time
                         # score = score if score == 500 else score + 100
                         self.statistics.append_score(score)
-                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not(self.is_tests):
+                if self.statistics.get_current_mean_score() >= self.settigns.game_settings.target_accuracy and not (
+                self.is_tests):
                     self.signal_done.emit(
-                        e+1, self.statistics.get_current_mean_score())
-                    done_signal_emited=True
+                        episodes + 1, self.statistics.get_current_mean_score())
+                    done_signal_emited = True
 
+                    break
+                episodes += 1
+                if self.is_tests and episodes > self.settigns.game_settings.max_episodes_number:
+                    self.signal_done.emit(episodes,
+                                          self.statistics.get_current_mean_score())
+
+                    break
+                if not (self.is_tests) and steps > self.settigns.game_settings.max_steps_number:
+                    self.signal_done.emit(episodes,
+                                          self.statistics.get_current_mean_score())
+                    done_signal_emited = True
                     break
         else:
             if  self.is_tests!=True:
                 self.agent.train_model()
                 done_signal_emited=True
 
-
-        if not(done_signal_emited):
-            self.signal_done.emit(self.settigns.game_settings.max_episodes,self.statistics.get_current_mean_score())
-        if not(self.is_tests):
+        if not (done_signal_emited):
+            self.signal_done.emit(self.settigns.game_settings.max_episodes, self.statistics.get_current_mean_score())
+        if not (self.is_tests):
             self.agent.save_model()
         backend.clear_session()
         if self.render:

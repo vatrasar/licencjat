@@ -27,7 +27,7 @@
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="learning_rate_spin">
         <property name="decimals">
-         <number>3</number>
+         <number>8</number>
         </property>
         <property name="minimum">
          <double>0.000000000000000</double>
