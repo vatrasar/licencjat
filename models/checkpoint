@@ -1,2 +1,2 @@
-model_checkpoint_path: "agentPPO"
-all_model_checkpoint_paths: "agentPPO"
+model_checkpoint_path: "agent.ckpt"
+all_model_checkpoint_paths: "agent.ckpt"

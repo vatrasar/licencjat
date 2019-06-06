@@ -38,6 +38,7 @@ class AgentPG():
         return discounted_episode_rewards
 
     def build_model(self):
+        tf.reset_default_graph()
         with tf.name_scope("inputs"):
             self.input_ = tf.placeholder(tf.float32, [None, self.state_size], name="input_")
             self.actions = tf.placeholder(tf.int32, [None, self.action_size], name="actions")
@@ -81,7 +82,7 @@ class AgentPG():
 
             self.sess=tf.Session()
             self.sess.run(tf.global_variables_initializer())
-
+            self.saver =tf.train.Saver()
 
 
     def get_action(self,state):
@@ -111,12 +112,13 @@ class AgentPG():
         self.episode_rewards.append(reward)
         self.episode_states.append(state)
     def save_model(self):
-        saver = tf.train.Saver()
-        saver.save(self.sess, "./models/agent.ckpt")
+
+        self.saver.save(self.sess, "./models/agent.ckpt")
         print("Model saved")
+
     def load_model(self,agent_to_load_directory):
-        saver = tf.train.Saver()
-        saver.restore(self.sess,  "./models/agent.ckpt")
+
+        self.saver.restore(self.sess,  "./models/agent.ckpt")
     def train_model(self):
         pass
 

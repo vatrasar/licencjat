@@ -17,6 +17,7 @@ from conf import game_type
 from stable_baselines.common.cmd_util import make_atari_env
 from stable_baselines.common.vec_env import VecFrameStack
 import time
+import tensorflow as tf
 from stable_baselines.common.vec_env import SubprocVecEnv
 import datetime
 
@@ -158,6 +159,7 @@ class Play(QThread):
         if not(self.is_tests):
             self.agent.save_model()
         backend.clear_session()
+        tf.reset_default_graph()
         self.env.close()
 
 class PlayPong(QThread):
@@ -289,6 +291,7 @@ class PlayPong(QThread):
         if not (self.is_tests):
             self.agent.save_model()
         backend.clear_session()
+        tf.reset_default_graph()
         if self.render:
             self.env.venv.envs[0].unwrapped.viewer.window.close()
 

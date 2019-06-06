@@ -84,8 +84,8 @@ class AgentPPO(BaseAgent):
 
     def callback(self,_locals, _globals):
         self.statistic.append_score(_locals['rewbuffer'],_locals['episodes_so_far'])
-
-        self.signal_episde.emit(_locals['episodes_so_far'])
+        if _locals['episodes_so_far']!=0:
+            self.signal_episde.emit(_locals['episodes_so_far'],self.statistic.get_current_mean_score(),_locals['rewbuffer'][-1],_locals['timesteps_so_far'])
 
         if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or _locals['timesteps_so_far']>=self.game_settings.max_steps_number:
             self.signal_done.emit(_locals['episodes_so_far'], self.statistic.get_current_mean_score())
