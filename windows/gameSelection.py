@@ -52,6 +52,8 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Uwaga: nie wszystkie gry są dostepne dla poszczególnych agentów"))
         self.game_combo_box.setItemText(0, _translate("MainWindow", "Pong"))
         self.game_combo_box.setItemText(1, _translate("MainWindow", "cartpole"))
-        self.game_combo_box.setItemText(2, _translate("MainWindow", "sonic the hedgehog"))
+        self.game_combo_box.setItemText(2, _translate("MainWindow", "BankHeist"))
         self.label.setText(_translate("MainWindow", "Gra"))
+
+
 

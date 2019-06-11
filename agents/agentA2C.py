@@ -212,7 +212,7 @@ class A2CAgentBaseline(BaseAgent):
         if _locals['ep_infos'].__len__()>=1:
             self.episodes+=1
             self.statistic.append_a2c(_locals['ep_infos'][0]['r'], self.episodes)
-            self.signal_episde.emit(self.episodes)
+            self.signal_episde.emit(self.episodes,self.statistic.get_current_mean_score(),_locals['ep_infos'][0]['r'],steps)
 
 
 

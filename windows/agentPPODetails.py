@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "A2C szczegóły"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PPO szczegóły"))
         self.label_2.setText(_translate("MainWindow", "epslion (z funkcji  clip)"))
         self.label.setText(_translate("MainWindow", "c2 (współczynnik entropi)"))
         self.label_3.setText(_translate("MainWindow", "c1 (współczynnik krytyka)"))

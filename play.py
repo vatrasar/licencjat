@@ -19,7 +19,9 @@ from stable_baselines.common.vec_env import VecFrameStack
 import time
 import tensorflow as tf
 from stable_baselines.common.vec_env import SubprocVecEnv
+from stable_baselines.common.vec_env import DummyVecEnv
 import datetime
+from conf import environments
 
 
 class Play(QThread):
@@ -47,7 +49,9 @@ class Play(QThread):
         #     if not(is_tests):
         #         n_cpu = 8
         #         self.env = SubprocVecEnv([lambda: gym.make('CartPole-v1') for i in range(n_cpu)])
-        #     statistics = StatisticsBaseline(self.settigns.game_settings.episodes_batch_size, self.signal_plot)
+        #     else:
+        #         self.env = DummyVecEnv([lambda: self.env])
+        #     statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
         #     self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
         #                           self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
 
@@ -80,6 +84,7 @@ class Play(QThread):
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
             self.agent = A2CAgent(self.state_size, self.action_size, self.settigns.agent_settings, self.is_agent_to_load,
                                   self.agent_to_load_directory,self.settigns.game_settings.game_name)
+
 
 
 
@@ -162,7 +167,7 @@ class Play(QThread):
         tf.reset_default_graph()
         self.env.close()
 
-class PlayPong(QThread):
+class PlayAtari(QThread):
 
 
     signal_plot = pyqtSignal()
@@ -180,7 +185,8 @@ class PlayPong(QThread):
 
 
         else:
-            self.env = make_atari_env('PongNoFrameskip-v4', num_env=1, seed=0)
+
+            self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=1, seed=0)
             self.env = VecFrameStack(self.env, n_stack=4)
 
 

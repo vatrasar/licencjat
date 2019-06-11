@@ -15,9 +15,11 @@ import windows.PGSettingsWindow
 import windows.agentA2cDetails
 import windows.agentPPODetails
 import windows.alterWindow
+from stable_baselines.common.vec_env import DummyVecEnv
 
 import windows.batchSizeWindow
 from PyQt5.QtWidgets import  QFileDialog
+from conf import game_type
 
 
 class Gui:
@@ -134,7 +136,7 @@ class Gui:
 
     def update_infromation_about_episode_number(self,episode_number,reward_mean,last_reward,steps):
         self.ui.information_label.setText("Trwa uczenie:epizod "+str(episode_number))
-        reward_mean=reward_mean if reward_mean!=-9999999 else "czekiwanie"
+        reward_mean=reward_mean if reward_mean!=-9999999 else "oczekiwanie"
         self.ui.mean_reward_label.setText("Średnia nagroda: "+str(reward_mean))
         self.ui.label.setText("ostatnia nagroda: "+str(last_reward))
         self.ui.steps_label.setText("Liczba kroków: "+str(steps))
@@ -184,9 +186,9 @@ class Gui:
         if self.settigns.game_settings.game_name == "cartpole":
             self.game = play.Play(self.settigns, False, False, self.loaded_agent_directory,
                                   self.learning_ui.saved_agent_radio.isChecked())
-        if self.settigns.game_settings.game_name == "Pong":
-            self.game = play.PlayPong(self.settigns, False, False, self.loaded_agent_directory,
-                                      self.learning_ui.saved_agent_radio.isChecked())
+        if game_type[self.settigns.game_settings.game_name] == "atari":
+            self.game = play.PlayAtari(self.settigns, False, False, self.loaded_agent_directory,
+                                       self.learning_ui.saved_agent_radio.isChecked())
 
         self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
@@ -210,9 +212,9 @@ class Gui:
 
             self.game = play.Play(self.settigns, True, True, loaded_agent_directory,
                                   True)
-        if self.settigns.game_settings.game_name == "Pong":
-            self.game = play.PlayPong(self.settigns,True, True,loaded_agent_directory,
-                                      True)
+        if game_type[self.settigns.game_settings.game_name] == "atari":
+            self.game = play.PlayAtari(self.settigns, True, True, loaded_agent_directory,
+                                       True)
 
         self.game.statistics.signal_plot.connect(self.plot)
         self.game.signal_episode.connect(self.update_infromation_about_episode_number)
@@ -241,7 +243,7 @@ class Gui:
 
         self.alter_window.show()
     def accept_test_action(self):
-        self.prepare_learning()
+        self.prepare_tests()
         self.alter_window.close()
     def accept_learning_action(self):
         self.prepare_learning()
@@ -249,10 +251,14 @@ class Gui:
     def reject_action(self):
         self.alter_window.close()
     def get_orginal_game_name_fro_agent(self,agent_directory):
-        input=open(agent_directory[0:-4]+".txt","r")
-        game_name=input.readline()
-        input.close()
-        return game_name
+        try:
+            input=open(agent_directory[0:-4]+".txt","r")
+            game_name=input.readline()
+            input.close()
+            return game_name
+        except FileNotFoundError:
+            return "None"
+
     def reject_start_learning(self):
         self.learning_window.close()
 
