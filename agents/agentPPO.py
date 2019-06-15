@@ -75,10 +75,16 @@ class AgentPPO(BaseAgent):
         out.close()
 
     def load_model(self,agent_to_load_directory):
-        if  agent_to_load_directory=="":
-            self.model=PPO1.load("./models/agentPPO.pkl",env=self.env)
+        if self.game_type != "atari":
+            if  agent_to_load_directory=="":
+                self.model=PPO1.load("./models/agentPPO.pkl",env=self.env)
+            else:
+                self.model=PPO1.load(agent_to_load_directory,env=self.env)
         else:
-            self.model=PPO1.load(agent_to_load_directory,env=self.env)
+            if  agent_to_load_directory=="":
+                self.model=PPO2.load("./models/agentPPO.pkl")
+            else:
+                self.model=PPO2.load(agent_to_load_directory)
 
     def train_model(self):
         if self.game_type == "box":

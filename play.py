@@ -24,6 +24,46 @@ import datetime
 from conf import environments
 
 
+class TestEnv:
+
+
+    def __init__(self,env_name,number_of_envs) -> None:
+
+        self.env=make_atari_env(env_name, num_env=1, seed=0)
+        self.number_of_envs=number_of_envs
+
+
+    def reset(self):
+        obs = self.env.reset()
+        return self.preproces_state(obs)
+
+    def step(self,action):
+
+        action=[action[0]]
+
+        obs, rewards, dones, info=self.env.step(action)
+
+        return self.preproces_state(obs),rewards[0],dones[0],[]
+
+
+
+    def preproces_state(self,state):
+        stack=[]
+        new_state=state.tolist()
+        new_state=new_state[0]
+
+        for i in range(0,self.number_of_envs):
+            stack.append(new_state)
+        new_state=np.asarray(stack)
+        return new_state
+    def render(self):
+        self.env.render()
+
+    def close(self):
+        # self.env.venv.envs[0].unwrapped.viewer.window.close()
+        self.env.envs[0].unwrapped.viewer.window.close()
+
+
 class Play(QThread):
 
 
@@ -180,24 +220,24 @@ class PlayAtari(QThread):
         self.render=render
         self.is_tests=is_tests
         # In case of CartPole-v1, maximum length of episode is 500
-        if "Strategia Gradientowa"==self.settigns.agent_settings.algorithm:
-            self.env = gym.make("Pong-v0")
 
-
+        if "Proximal Policy Optimization"==self.settigns.agent_settings.algorithm:
+            env_num=8
         else:
-            if "Proximal Policy Optimization"==self.settigns.agent_settings.algorithm and not(self.is_tests):
-                env_num=8
-            else:
-                env_num=1
+            env_num=1
 
-            self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=env_num, seed=0)
-            if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm:
-                self.env = VecFrameStack(self.env, n_stack=4)
+        self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=env_num, seed=0)
+        if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm:
+
+            self.env = VecFrameStack(self.env, n_stack=4)
+        else:
+            if is_tests:
+                self.env = TestEnv(environments[settigns.game_settings.game_name],env_num)
 
 
         # get size of state and action from environment
-        self.state_size = self.env.observation_space.shape[0]
-        self.action_size = self.env.action_space.n
+        self.state_size = 1
+        self.action_size = 1
         a = self.settigns.agent_settings
 
 
@@ -303,7 +343,9 @@ class PlayAtari(QThread):
             self.agent.save_model()
         backend.clear_session()
         tf.reset_default_graph()
-        if self.render:
+        if self.render and game_type[self.settigns.game_settings.game_name]=="atari" and self.settigns.agent_settings.algorithm=="Proximal Policy Optimization":
+            self.env.close()
+        else:
             self.env.venv.envs[0].unwrapped.viewer.window.close()
 
 
