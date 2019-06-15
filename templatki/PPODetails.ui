@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>443</width>
-    <height>220</height>
+    <height>226</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="epslion_spin">
         <property name="decimals">
-         <number>3</number>
+         <number>6</number>
         </property>
         <property name="minimum">
          <double>0.000000000000000</double>
@@ -47,7 +47,7 @@
       <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="c2_spin">
         <property name="decimals">
-         <number>3</number>
+         <number>6</number>
         </property>
         <property name="maximum">
          <double>1.000000000000000</double>
@@ -65,15 +65,29 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="c1_spin">
         <property name="decimals">
-         <number>3</number>
+         <number>6</number>
         </property>
         <property name="maximum">
          <double>1.000000000000000</double>
         </property>
         <property name="singleStep">
          <double>0.001000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Współczynnik uczenia</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="learning_rate">
+        <property name="decimals">
+         <number>6</number>
         </property>
        </widget>
       </item>

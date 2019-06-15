@@ -80,13 +80,15 @@ class AgentSettings():
         self.c2 = 0.01
         self.clip_epslion = 0.2
         self.gamma=0.98
+        self.learning_rate=1e-05
 
     def set_ppo_atari_default(self):
         self.algorithm = "Proximal Policy Optimization"
-        self.c1 = 0.95
-        self.c2 = 0.01
+        self.c1 = 0.5
+        self.c2 =  0.01
         self.clip_epslion = 0.2
         self.gamma=0.99
+        self.learning_rate =0.00025
 
 
 class GameSettings():

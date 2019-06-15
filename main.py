@@ -308,7 +308,7 @@ class Gui:
         self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
         self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
         self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
-
+        self.agent_ppo_details_ui.learning_rate.setValue(settigns.agent_settings.learning_rate)
         self.agent_ppo_details_window.show()
 
 
@@ -322,11 +322,13 @@ class Gui:
         self.agent_ppo_details_ui.c2_spin.setValue(settigns.agent_settings.c2)
         self.agent_ppo_details_ui.c1_spin.setValue(settigns.agent_settings.c1)
         self.agent_ppo_details_ui.epslion_spin.setValue(settigns.agent_settings.clip_epslion)
+        self.agent_ppo_details_ui.learning_rate.setValue(settigns.agent_settings.learning_rate)
 
     def accept_new_agent_ppo_details_settings(self):
         settigns.agent_settings.c2=self.agent_ppo_details_ui.c2_spin.value()
         settigns.agent_settings.c1=self.agent_ppo_details_ui.c1_spin.value()
         settigns.agent_settings.clip_epslion=self.agent_ppo_details_ui.epslion_spin.value()
+        settigns.agent_settings.learning_rate = self.agent_ppo_details_ui.learning_rate.value()
         self.agent_ppo_details_window.close()
 
     def reject_new_agent_ppo_details_settings(self):

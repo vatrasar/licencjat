@@ -185,9 +185,14 @@ class PlayAtari(QThread):
 
 
         else:
+            if "Proximal Policy Optimization"==self.settigns.agent_settings.algorithm and not(self.is_tests):
+                env_num=8
+            else:
+                env_num=1
 
-            self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=1, seed=0)
-            self.env = VecFrameStack(self.env, n_stack=4)
+            self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=env_num, seed=0)
+            if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm:
+                self.env = VecFrameStack(self.env, n_stack=4)
 
 
         # get size of state and action from environment
