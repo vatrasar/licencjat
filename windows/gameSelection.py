@@ -28,6 +28,7 @@ class Ui_MainWindow(object):
         self.game_combo_box.addItem("")
         self.game_combo_box.addItem("")
         self.game_combo_box.addItem("")
+        self.game_combo_box.addItem("")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.game_combo_box)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setObjectName("label")
@@ -52,7 +53,8 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Uwaga: nie wszystkie gry są dostepne dla poszczególnych agentów"))
         self.game_combo_box.setItemText(0, _translate("MainWindow", "Pong"))
         self.game_combo_box.setItemText(1, _translate("MainWindow", "cartpole"))
-        self.game_combo_box.setItemText(2, _translate("MainWindow", "BankHeist"))
+        self.game_combo_box.setItemText(2, _translate("MainWindow", "Boxing"))
+        self.game_combo_box.setItemText(3, _translate("MainWindow", "Assault"))
         self.label.setText(_translate("MainWindow", "Gra"))
 
 

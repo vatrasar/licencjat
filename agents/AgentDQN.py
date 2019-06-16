@@ -223,7 +223,11 @@ class DQNAgentBaseline(BaseAgent):
 
             return False
         if time.time()-self.last_save_time>60*10:
-
+            output = open("./models/trenningResults.txt", "w")
+            output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
+            output.write("liczba epizodów:" + str( _locals['episode_rewards'].__len__()) + "\n")
+            output.write("liczba kroków:" + str(_locals['_']) + "\n")
+            output.close()
 
             self.last_save_time=time.time()
 

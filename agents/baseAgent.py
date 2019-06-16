@@ -7,6 +7,7 @@ class BaseAgent():
         self.action_size = action_size
         self.is_baseline=False
         self.game_name=game_name
+        self.is_multienv=False
 
 
     def build_model(self):

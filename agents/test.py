@@ -1,14 +1,16 @@
 from stable_baselines.common.cmd_util import make_atari_env
 from stable_baselines.common.vec_env import VecFrameStack
-from stable_baselines import PPO2
+from stable_baselines import A2C
 import gym
 import numpy as np
 from stable_baselines.common.policies import CnnLstmPolicy
+from stable_baselines.common.policies import CnnPolicy
 
 def callback(_locals, _globals):
 
 
     time_steps=_locals['update']*_locals['runner'].n_steps*_locals['runner'].env.num_envs
+    print(time_steps)
 
 class TestEnv:
 
@@ -49,13 +51,14 @@ class TestEnv:
 # There already exists an environment generator
 # that will make and wrap atari environments correctly.
 # Here we are also multiprocessing training (num_env=4 => 4 processes)
-env = make_atari_env('PongNoFrameskip-v4', num_env=8, seed=0)
-# # Frame-stacking with 4 frames
+env = make_atari_env("AssaultNoFrameskip-v4", num_env=1, seed=0)
+env = VecFrameStack(env, n_stack=4)
+# # Frame-stacking withgoogle 4 frames
 
 #
-model = PPO2(CnnLstmPolicy, env, verbose=1)
-model.learn(total_timesteps=320,callback=callback)
-env = TestEnv('PongNoFrameskip-v4',8)
+model = A2C (CnnPolicy, env, verbose=1)
+model.learn(total_timesteps=5000000,callback=callback)
+env = TestEnv("AssaultNoFrameskip-v4",16)
 obs = env.reset()
 while True:
 

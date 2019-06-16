@@ -13,7 +13,7 @@ import datetime
 
 class AgentPPO(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
-                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name):
+                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_tests):
         """
 
         :param state_size:
@@ -44,10 +44,13 @@ class AgentPPO(BaseAgent):
         self.last_save_time=time.time()
         self.lr=agent_settings.learning_rate
         if is_agent_to_load:
-            self.load_model(agent_to_load_directory)
+            self.load_model(agent_to_load_directory,is_tests)
         else:
             self.build_model()
         self.episodes_number=0
+        if self.game_type == "atari":
+            self.is_multienv=True
+
 
     def build_model(self):
 
@@ -74,17 +77,23 @@ class AgentPPO(BaseAgent):
         out.write(self.game_name)
         out.close()
 
-    def load_model(self,agent_to_load_directory):
+    def load_model(self,agent_to_load_directory,is_test=False):
         if self.game_type != "atari":
             if  agent_to_load_directory=="":
                 self.model=PPO1.load("./models/agentPPO.pkl",env=self.env)
             else:
                 self.model=PPO1.load(agent_to_load_directory,env=self.env)
         else:
-            if  agent_to_load_directory=="":
-                self.model=PPO2.load("./models/agentPPO.pkl")
+            if is_test:
+                if  agent_to_load_directory=="":
+                    self.model=PPO2.load("./models/agentPPO.pkl")
+                else:
+                    self.model=PPO2.load(agent_to_load_directory)
             else:
-                self.model=PPO2.load(agent_to_load_directory)
+                if  agent_to_load_directory=="":
+                    self.model=PPO2.load("./models/agentPPO.pkl",env=self.env)
+                else:
+                    self.model=PPO2.load(agent_to_load_directory,env=self.env)
 
     def train_model(self):
         if self.game_type == "box":
@@ -140,6 +149,12 @@ class AgentPPO(BaseAgent):
             self.last_save_time=time.time()
 
             self.save_model("./models/agentPPOtemp")
+
+            output = open("./models/trenningResults.txt", "w")
+            output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
+            output.write("liczba epizodów:" + str(self.episodes_number) + "\n")
+            output.write("liczba kroków:" + str(time_steps) + "\n")
+            output.close()
         return True
 
 

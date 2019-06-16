@@ -223,11 +223,13 @@ class PlayAtari(QThread):
 
         if "Proximal Policy Optimization"==self.settigns.agent_settings.algorithm:
             env_num=8
+        elif "Advantage Actor Critic"==self.settigns.agent_settings.algorithm:
+            env_num = 16
         else:
             env_num=1
 
         self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=env_num, seed=0)
-        if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm:
+        if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm and "Advantage Actor Critic"!=self.settigns.agent_settings.algorithm:
 
             self.env = VecFrameStack(self.env, n_stack=4)
         else:
@@ -251,12 +253,12 @@ class PlayAtari(QThread):
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
             statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
-                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
-                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name)
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests)
 
 
 
@@ -343,7 +345,7 @@ class PlayAtari(QThread):
             self.agent.save_model()
         backend.clear_session()
         tf.reset_default_graph()
-        if self.render and game_type[self.settigns.game_settings.game_name]=="atari" and self.settigns.agent_settings.algorithm=="Proximal Policy Optimization":
+        if self.render and game_type[self.settigns.game_settings.game_name]=="atari" and self.agent.is_multienv:
             self.env.close()
         else:
             self.env.venv.envs[0].unwrapped.viewer.window.close()

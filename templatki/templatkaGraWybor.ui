@@ -43,6 +43,11 @@
             <string>Boxing</string>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Assault</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="0" column="0">
