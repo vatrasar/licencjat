@@ -283,7 +283,7 @@ class PlayAtari(QThread):
                 score = 0
                 state = self.env.reset()
 
-
+                done_num=0
                 while not done:
                     if self.render:
                         self.env.render()
@@ -307,6 +307,10 @@ class PlayAtari(QThread):
                     state = next_state
                     steps += 1
                     if done:
+                        done_num+=1
+                        if done_num<4 and self.settigns.game_settings.game_name=="Assault":
+                            done=False
+                            continue
                         # every episode update the target model to be same with model
                         if not(self.agent.is_baseline):
                             self.agent.train_model()

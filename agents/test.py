@@ -47,24 +47,36 @@ class TestEnv:
     def render(self):
         self.env.render()
 
+    def close(self):
+        # self.env.venv.envs[0].unwrapped.viewer.window.close()
+        self.env.envs[0].unwrapped.viewer.window.close()
+
+
 
 # There already exists an environment generator
 # that will make and wrap atari environments correctly.
 # Here we are also multiprocessing training (num_env=4 => 4 processes)
-env = make_atari_env("AssaultNoFrameskip-v4", num_env=1, seed=0)
-env = VecFrameStack(env, n_stack=4)
-# # Frame-stacking withgoogle 4 frames
+env = make_atari_env("AssaultNoFrameskip-v4", num_env=16, seed=0)
 
-#
-model = A2C (CnnPolicy, env, verbose=1)
-model.learn(total_timesteps=5000000,callback=callback)
+# # Frame-stacking withgoogle 4 frames
+import time
+model = A2C (CnnLstmPolicy, env, verbose=1)
+model.learn(total_timesteps=500,callback=callback)
 env = TestEnv("AssaultNoFrameskip-v4",16)
 obs = env.reset()
+score=0
 while True:
 
     action, _states = model.predict(obs)
 
     obs, rewards, dones, info = env.step(action)
+    score+=rewards
+    if rewards!=0:
+        print(score)
+        time.sleep(5)
+    if dones==True:
+        score=0
+
     env.render()
 
 #

@@ -140,7 +140,7 @@ class A2CAgent(BaseAgent):
 
 class A2CAgentBaseline(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
-                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_multienv):
+                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_test):
         """
 
         :param state_size:
@@ -174,11 +174,10 @@ class A2CAgentBaseline(BaseAgent):
         self.episodes_number=0
         self.is_multienv=True
         if is_agent_to_load:
-            self.load_model(agent_to_load_directory)
+            self.load_model(agent_to_load_directory,is_test)
         else:
             self.build_model()
-        if self.game_type == "atari":
-            self.is_multienv = is_multienv
+
 
     def build_model(self):
 
