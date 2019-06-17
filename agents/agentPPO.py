@@ -13,7 +13,7 @@ import datetime
 
 class AgentPPO(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
-                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_tests):
+                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_tests,is_stack=False):
         """
 
         :param state_size:
@@ -33,7 +33,7 @@ class AgentPPO(BaseAgent):
         self.is_baseline=True
         self.signal_done=signal_done
         self.signal_episde=signal_episode
-
+        self.is_stack=is_stack
         self.statistic=statistic
         self.game_settings=game_settings
         self.c1=agent_settings.c1
@@ -52,15 +52,26 @@ class AgentPPO(BaseAgent):
             self.is_multienv=True
 
 
+
+
     def build_model(self):
+        if self.is_stack:
+            if self.game_type == "box":
+                self.env = DummyVecEnv([lambda: self.env])
+                self.model = PPO1(MlpPolicy, self.env, verbose=0, gamma=self.gamma, lam=self.c1, entcoeff=self.c2,
+                                  clip_param=self.clip_epslion, adam_epsilon=self.lr)
+            if self.game_type == "atari":
+                self.model = PPO2(CnnPolicy, self.env, verbose=1, gamma=self.gamma, vf_coef=self.c1,
+                                  ent_coef=self.c2, cliprange=self.clip_epslion, learning_rate=self.lr)
 
-        if self.game_type=="box":
-            self.env = DummyVecEnv([lambda: self.env])
-            self.model = PPO1(MlpPolicy, self.env, verbose=0,gamma=self.gamma,lam=self.c1,entcoeff=self.c2,clip_param=self.clip_epslion,adam_epsilon=self.lr)
-        if self.game_type=="atari":
+        else:
+            if self.game_type=="box":
+                self.env = DummyVecEnv([lambda: self.env])
+                self.model = PPO1(MlpPolicy, self.env, verbose=0,gamma=self.gamma,lam=self.c1,entcoeff=self.c2,clip_param=self.clip_epslion,adam_epsilon=self.lr)
+            if self.game_type=="atari":
 
-            self.model = PPO2(CnnLstmPolicy, self.env, verbose=1,gamma=self.gamma,vf_coef=self.c1,ent_coef=self.c2,cliprange=self.clip_epslion,learning_rate=self.lr)
-            #self.model = PPO2(CnnLstmPolicy, self.env, verbose=1)
+                self.model = PPO2(CnnLstmPolicy, self.env, verbose=1,gamma=self.gamma,vf_coef=self.c1,ent_coef=self.c2,cliprange=self.clip_epslion,learning_rate=self.lr)
+                #self.model = PPO2(CnnLstmPolicy, self.env, verbose=1)
     def update_target_model(self):
         super().update_target_model()
 
@@ -100,6 +111,13 @@ class AgentPPO(BaseAgent):
             self.model.learn(total_timesteps=self.game_settings.max_steps_number,callback=self.callback)
         else:
             self.model.learn(total_timesteps=self.game_settings.max_steps_number, callback=self.callback2)
+            self.signal_done.emit(self.episodes_number, self.statistic.get_current_mean_score())
+            self.done = True
+            output = open("./models/trenningResults.txt", "w")
+            output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
+            output.write("liczba epizodów:" + str(self.episodes_number) + "\n")
+            output.write("liczba kroków:" + str(self.time_steps) + "\n")
+            output.close()
 
 
     def callback(self,_locals, _globals):
@@ -127,20 +145,14 @@ class AgentPPO(BaseAgent):
 
     def callback2(self,_locals, _globals):
 
-        time_steps = _locals['update'] * _locals['runner'].n_steps * _locals['runner'].env.num_envs
+        self.time_steps = _locals['update'] * _locals['runner'].n_steps * _locals['runner'].env.num_envs
         for epo in _locals['ep_infos']:
             self.episodes_number+=1
             self.statistic.append_a2c(epo['r'],self.episodes_number)
-            self.signal_episde.emit(self.episodes_number,self.statistic.get_current_mean_score(),_locals['ep_infos'][-1]['r'],time_steps)
+            self.signal_episde.emit(self.episodes_number,self.statistic.get_current_mean_score(),_locals['ep_infos'][-1]['r'],self.time_steps)
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or time_steps>=self.game_settings.max_steps_number:
-            self.signal_done.emit(self.episodes_number, self.statistic.get_current_mean_score())
-            self.done=True
-            output=open("./models/trenningResults.txt","w")
-            output.write("czas trening:"+str((time.time()-self.start_time)/3600)+"h \n")
-            output.write("liczba epizodów:"+str(self.episodes_number) + "\n")
-            output.write("liczba kroków:" + str(time_steps) + "\n")
-            output.close()
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or self.time_steps>=self.game_settings.max_steps_number:
+
 
             return False
         if time.time()-self.last_save_time>60*10:
@@ -153,7 +165,7 @@ class AgentPPO(BaseAgent):
             output = open("./models/trenningResults.txt", "w")
             output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
             output.write("liczba epizodów:" + str(self.episodes_number) + "\n")
-            output.write("liczba kroków:" + str(time_steps) + "\n")
+            output.write("liczba kroków:" + str(self.time_steps) + "\n")
             output.close()
         return True
 

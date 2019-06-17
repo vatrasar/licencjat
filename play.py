@@ -108,7 +108,7 @@ class Play(QThread):
                                   self.env, self.signal_done,
                                   self.signal_episode, statistics, self.settigns.game_settings,
                                   game_type[self.settigns.game_settings.game_name], self.agent_to_load_directory,
-                                  self.settigns.game_settings.game_name)
+                                  self.settigns.game_settings.game_name,is_tests)
     def __del__(self):
         self.wait()
 
@@ -164,6 +164,9 @@ class Play(QThread):
                     # every time step do the training
                     if not (self.agent.is_baseline):#baseline is here during tests
                         self.agent.train_model()
+
+
+
                     score += reward
                     state = next_state
 
@@ -192,6 +195,13 @@ class Play(QThread):
                                           self.statistics.get_current_mean_score())
                     done_signal_emited = True
                     break
+            if not(self.agent.is_baseline):
+
+                output = open("./models/trenningResults.txt", "w")
+                output.write("czas trening:" + str((time.time() - self.agent.start_time) / 3600) + "h \n")
+                output.close()
+
+
 
         else:
             if  not(self.is_tests):
@@ -205,16 +215,21 @@ class Play(QThread):
             self.agent.save_model()
         backend.clear_session()
         tf.reset_default_graph()
-        self.env.close()
+        if self.is_tests:
+            self.env.close()
 
 class PlayAtari(QThread):
+
+
+
 
 
     signal_plot = pyqtSignal()
     signal_episode = pyqtSignal("int","double","double","int")
     signal_done=pyqtSignal("int","int")
-    def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load):
+    def __init__(self, settigns:Settings, render, is_tests,agent_to_load_directory,is_agent_to_load,is_stack=False):
         QThread.__init__(self)
+        self.is_stack=not(settigns.agent_settings.is_LSTM)
         self.settigns=settigns
         self.statistics=Statistics(self.settigns.curve_batch_size,self.signal_plot)
         self.render=render
@@ -229,7 +244,7 @@ class PlayAtari(QThread):
             env_num=1
 
         self.env = make_atari_env(environments[settigns.game_settings.game_name], num_env=env_num, seed=0)
-        if "Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm and "Advantage Actor Critic"!=self.settigns.agent_settings.algorithm:
+        if ("Proximal Policy Optimization"!=self.settigns.agent_settings.algorithm and "Advantage Actor Critic"!=self.settigns.agent_settings.algorithm) or self.is_stack:
 
             self.env = VecFrameStack(self.env, n_stack=4)
         else:
@@ -253,12 +268,12 @@ class PlayAtari(QThread):
         if self.settigns.agent_settings.algorithm == "Advantage Actor Critic":
             statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = A2CAgentBaseline(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
-                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests)
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests,self.is_stack)
 
         if self.settigns.agent_settings.algorithm == "Proximal Policy Optimization":
             statistics = StatisticsBaseline(self.settigns.curve_batch_size, self.signal_plot)
             self.agent = AgentPPO(self.state_size, self.action_size, self.settigns.agent_settings,is_agent_to_load, self.env, self.signal_done,
-                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests)
+                                  self.signal_episode, statistics, self.settigns.game_settings, game_type[settigns.game_settings.game_name],agent_to_load_directory, self.settigns.game_settings.game_name,is_tests,self.is_stack)
 
 
 
@@ -343,6 +358,7 @@ class PlayAtari(QThread):
                 self.agent.train_model()
                 done_signal_emited=True
 
+
         if not (done_signal_emited):
             self.signal_done.emit(self.settigns.game_settings.max_episodes, self.statistics.get_current_mean_score())
         if not (self.is_tests):
@@ -351,7 +367,7 @@ class PlayAtari(QThread):
         tf.reset_default_graph()
         if self.render and game_type[self.settigns.game_settings.game_name]=="atari" and self.agent.is_multienv:
             self.env.close()
-        else:
+        elif self.is_tests:
             self.env.venv.envs[0].unwrapped.viewer.window.close()
 
 

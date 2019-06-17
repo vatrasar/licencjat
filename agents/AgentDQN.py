@@ -36,7 +36,8 @@ class DQNAgent:
         self.epsilon_min = agent_settings.mnimal_exploration
         self.batch_size = agent_settings.mini_batch
         self.train_start = 1000
-
+        self.start_time = time.time()
+        self.last_save_time = time.time()
         # create replay memory using deque
         self.memory = deque(maxlen=agent_settings.replay_size)
 

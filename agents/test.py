@@ -1,11 +1,11 @@
 from stable_baselines.common.cmd_util import make_atari_env
-from stable_baselines.common.vec_env import VecFrameStack
-from stable_baselines import A2C
+from stable_baselines.common.vec_env import VecFrameStack, SubprocVecEnv
+from stable_baselines import PPO2
 import gym
 import numpy as np
 from stable_baselines.common.policies import CnnLstmPolicy
 from stable_baselines.common.policies import CnnPolicy
-
+from stable_baselines.common.policies import MlpPolicy
 def callback(_locals, _globals):
 
 
@@ -56,13 +56,15 @@ class TestEnv:
 # There already exists an environment generator
 # that will make and wrap atari environments correctly.
 # Here we are also multiprocessing training (num_env=4 => 4 processes)
-env = make_atari_env("AssaultNoFrameskip-v4", num_env=16, seed=0)
+n_cpu = 16
+env = make_atari_env('PongNoFrameskip-v4',n_cpu,seed=0)
 
 # # Frame-stacking withgoogle 4 frames
 import time
-model = A2C (CnnLstmPolicy, env, verbose=1)
-model.learn(total_timesteps=500,callback=callback)
-env = TestEnv("AssaultNoFrameskip-v4",16)
+
+model=PPO2(CnnLstmPolicy,env=env)
+model.learn(11000,callback=callback)
+env = TestEnv('CartPole-v1',16)
 obs = env.reset()
 score=0
 while True:
@@ -70,10 +72,10 @@ while True:
     action, _states = model.predict(obs)
 
     obs, rewards, dones, info = env.step(action)
-    score+=rewards
+    score+=21*rewards
     if rewards!=0:
         print(score)
-        time.sleep(5)
+
     if dones==True:
         score=0
 

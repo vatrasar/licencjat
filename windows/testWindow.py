@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(320, 152)
+        MainWindow.resize(328, 170)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -40,6 +40,13 @@ class Ui_MainWindow(object):
         self.newest_agent_radi.setText("")
         self.newest_agent_radi.setObjectName("newest_agent_radi")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.newest_agent_radi)
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setObjectName("label_4")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_4)
+        self.checkBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox.setText("")
+        self.checkBox.setObjectName("checkBox")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.checkBox)
         self.verticalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(self.centralwidget)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
@@ -60,4 +67,6 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Liczba epizodów testowych"))
         self.label_2.setText(_translate("MainWindow", "Użyj wczytanego agenta"))
         self.label_3.setText(_translate("MainWindow", "Użyj najnowszego agenta"))
+        self.label_4.setText(_translate("MainWindow", "Sieć LSTM"))
+
 

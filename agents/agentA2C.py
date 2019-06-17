@@ -73,7 +73,7 @@ class A2CAgent(BaseAgent):
         self.critic_lr = agent_settings.critic_lr
         self.value_size = 1
         self.build_model()
-
+        self.start_time = time.time()
         if is_agent_to_load:
             self.load_model(agent_to_load_directory)
 
@@ -140,7 +140,7 @@ class A2CAgent(BaseAgent):
 
 class A2CAgentBaseline(BaseAgent):
     def __init__(self, state_size, action_size, agent_settings, is_agent_to_load, env, signal_done, signal_episode,
-                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_test):
+                 statistic: StatisticsBaseline,game_settings,game_type,agent_to_load_directory,game_name,is_test,is_stack=False):
         """
 
         :param state_size:
@@ -173,6 +173,7 @@ class A2CAgentBaseline(BaseAgent):
         self.last_save_time = time.time()
         self.episodes_number=0
         self.is_multienv=True
+        self.is_stack=is_stack
         if is_agent_to_load:
             self.load_model(agent_to_load_directory,is_test)
         else:
@@ -180,13 +181,18 @@ class A2CAgentBaseline(BaseAgent):
 
 
     def build_model(self):
-
-        if self.game_type == "box":
-            self.env = DummyVecEnv([lambda: self.env])
-            self.model = A2C(MlpPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
-        if self.game_type == "atari":
-            self.model = A2C(CnnLstmPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
-
+        if self.is_stack:
+            if self.game_type == "box":
+                self.env = DummyVecEnv([lambda: self.env])
+                self.model = A2C(MlpPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
+            if self.game_type == "atari":
+                self.model = A2C(CnnPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
+        else:
+            if self.game_type == "box":
+                self.env = DummyVecEnv([lambda: self.env])
+                self.model = A2C(MlpPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
+            if self.game_type == "atari":
+                self.model = A2C(CnnLstmPolicy, self.env, verbose=0, gamma=self.gamma, learning_rate =self.actor_lr, ent_coef=self.c2,vf_coef=self.critic_lr)
     def update_target_model(self):
         super().update_target_model()
 
@@ -224,6 +230,13 @@ class A2CAgentBaseline(BaseAgent):
     def train_model(self):
 
         self.model.learn(total_timesteps=self.game_settings.max_steps_number, callback=self.callback)
+        self.signal_done.emit(self.episodes_number, self.statistic.get_current_mean_score())
+        self.done = True
+        output = open("./models/trenningResults.txt", "w")
+        output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
+        output.write("liczba epizodów:" + str(self.episodes_number) + "\n")
+        output.write("liczba kroków:" + str(self.time_steps) + "\n")
+        output.close()
 
     def callback(self, _locals, _globals):
         # steps=_locals['update']*5
@@ -251,20 +264,13 @@ class A2CAgentBaseline(BaseAgent):
         #     self.save_model("./models/agentA2ctemp")
         # return True
 
-        time_steps = _locals['update'] * _locals['runner'].n_steps * _locals['runner'].env.num_envs
+        self.time_steps = _locals['update'] * _locals['runner'].n_steps * _locals['runner'].env.num_envs
         for epo in _locals['ep_infos']:
             self.episodes_number+=1
             self.statistic.append_a2c(epo['r'],self.episodes_number)
-            self.signal_episde.emit(self.episodes_number,self.statistic.get_current_mean_score(),_locals['ep_infos'][-1]['r'],time_steps)
+            self.signal_episde.emit(self.episodes_number,self.statistic.get_current_mean_score(),_locals['ep_infos'][-1]['r'],self.time_steps)
 
-        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or time_steps>=self.game_settings.max_steps_number:
-            self.signal_done.emit(self.episodes_number, self.statistic.get_current_mean_score())
-            self.done=True
-            output=open("./models/trenningResults.txt","w")
-            output.write("czas trening:"+str((time.time()-self.start_time)/3600)+"h \n")
-            output.write("liczba epizodów:"+str(self.episodes_number) + "\n")
-            output.write("liczba kroków:" + str(time_steps) + "\n")
-            output.close()
+        if self.statistic.get_current_mean_score()>=self.game_settings.target_accuracy or self.time_steps>=self.game_settings.max_steps_number:
 
             return False
         if time.time()-self.last_save_time>60*10:
@@ -275,7 +281,7 @@ class A2CAgentBaseline(BaseAgent):
             output = open("./models/trenningResults.txt", "w")
             output.write("czas trening:" + str((time.time() - self.start_time) / 3600) + "h \n")
             output.write("liczba epizodów:" + str(self.episodes_number) + "\n")
-            output.write("liczba kroków:" + str(time_steps) + "\n")
+            output.write("liczba kroków:" + str(self.time_steps) + "\n")
             output.close()
         return True
 

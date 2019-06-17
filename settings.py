@@ -15,7 +15,7 @@ class AgentSettings():
         self.c1=0
         self.c2=0
         self.clip_epslion=0.1
-
+        self.is_LSTM=True
     def set_dqn_default(self):
 
         self.gamma = 0.99
@@ -62,7 +62,7 @@ class AgentSettings():
         self.gamma=0.99
         self.critic_lr=0.001
         self.actor_lr=0.005
-        self.gamma=0.99
+
         # self.critic_lr=0.25
         # self.actor_lr=0.0007
         self.c2 = 0.00
