@@ -30,9 +30,9 @@ class DQNAgent:
         self.is_agent_to_load=is_agent_to_load
         # These are hyper parameters for the DQN
         self.discount_factor = agent_settings.gamma
-        self.learning_rate = agent_settings.learning_rate
+        self.learning_rate =agent_settings.learning_rate
         self.epsilon = 0.99
-        self.epsilon_decay = agent_settings.exploration_decay
+        self.epsilon_decay =1-agent_settings.exploration_decay
         self.epsilon_min = agent_settings.mnimal_exploration
         self.batch_size = agent_settings.mini_batch
         self.train_start = 1000

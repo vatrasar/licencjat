@@ -21,7 +21,7 @@ class AgentSettings():
         self.gamma = 0.99
         self.replay_size = 2000
         self.mini_batch = 64
-        self.exploration_decay = 0.999
+        self.exploration_decay = 1-0.999
         self.start_exploration_value = 1
         self.learning_rate = 0.001
         self.mnimal_exploration = 0.01

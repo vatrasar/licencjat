@@ -478,7 +478,8 @@ class Gui:
         self.agent_details_window= QtWidgets.QMainWindow()
         self.agent_details_ui = agentDqnDetailsWindow.Ui_MainWindow()
         self.agent_details_ui.setupUi(self.agent_details_window)
-
+        if self.settigns.game_settings.game_name=="cartpole":
+            self.agent_details_ui.label_4.setText("Szybkość erozji poziomu eksplorazcji")
         self.agent_details_ui.buttonBox.accepted.connect(self.accept_new_agent_details_settings)
         self.agent_details_ui.buttonBox.rejected.connect(self.reject_new_agent_details_settings)
         self.agent_details_ui.default_settings_button.clicked.connect(self.set_default_agent_details)
