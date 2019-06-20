@@ -81,9 +81,11 @@ class A2CAgent(BaseAgent):
         self.build_actor()
         self.build_critic()
 
-    def load_model(self,agent_to_load_directory):
-        self.actor.load_weights("./models/cartpole_actor.h5")
-        self.critic.load_weights("./models/cartpole_critic.h5")
+    def load_model(self, agent_to_load_directory: str):
+        index=[pos for pos, char in enumerate(agent_to_load_directory) if char == "/"][-1]
+        agent_to_load_directory=agent_to_load_directory[0:index+1]
+        self.actor.load_weights(agent_to_load_directory+"cartpole_actor.h5")
+        self.critic.load_weights(agent_to_load_directory+"/cartpole_critic.h5")
 
 
     def build_actor(self):
