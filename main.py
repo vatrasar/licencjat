@@ -44,7 +44,7 @@ class Gui:
         self.batch_ui = windows.batchSizeWindow.Ui_MainWindow()
         self.batch_ui.setupUi(self.batch_window)
         self.batch_ui.buttonBox.accepted.connect(self.accept_batch_size)
-        self.batch_ui.buttonBox.rejected.connect(self.reject_test_settings)
+        self.batch_ui.buttonBox.rejected.connect(self.reject_batch_size)
         self.batch_ui.batch_size.setValue(self.settigns.curve_batch_size)
         self.batch_window.show()
 

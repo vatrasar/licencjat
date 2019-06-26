@@ -88,7 +88,6 @@ class Ui_main_window(object):
         self.action_game_selection.setObjectName("action_game_selection")
         self.menu_agent.addAction(self.action_load_agent)
         self.menu_agent.addAction(self.action_create_agent)
-        self.menu_agent.addAction(self.action_agent_edit)
         self.menu_environment.addAction(self.action_game_selection)
         self.menu_start.addAction(self.action_test_settings_open)
         self.menu_start.addAction(self.action_learn_settings_open)
@@ -124,6 +123,7 @@ class Ui_main_window(object):
         self.action_Sonic_the_hedgehog_prestart.setText(_translate("main_window", "Sonic the hedgehog"))
         self.action_save_graph.setText(_translate("main_window", "Epizody do średniej"))
         self.action_game_selection.setText(_translate("main_window", "Wybierz"))
+
 
 
 

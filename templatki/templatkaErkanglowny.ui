@@ -109,7 +109,6 @@
     </property>
     <addaction name="action_load_agent"/>
     <addaction name="action_create_agent"/>
-    <addaction name="action_agent_edit"/>
    </widget>
    <widget class="QMenu" name="menu_environment">
     <property name="title">
