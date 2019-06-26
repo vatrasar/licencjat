@@ -171,7 +171,7 @@ class Gui:
 
     def accept_start_learning(self):
 
-
+        self.learning_window.close()
         if self.learning_ui.saved_agent_radio.isChecked() and self.settigns.game_settings.game_name!=self.get_orginal_game_name_fro_agent(self.loaded_agent_directory):
             self.open_alter_windows("Uwaga! Agent mógł być trenowany na grze innej niż jest obecnie ustawiona!",False)
 
@@ -180,10 +180,10 @@ class Gui:
 
             self.prepare_learning()
 
-        self.learning_window.close()
+
 
     def prepare_learning(self):
-
+        self.ui.information_label.setText("Przygotowywanie...")
         self.settigns.game_settings.max_steps_number = self.learning_ui.steps_number.value()
 
         self.settigns.game_settings.target_accuracy = self.learning_ui.stop_accuracy.value()
@@ -206,6 +206,7 @@ class Gui:
 
     def prepare_tests(self):
 
+        self.ui.information_label.setText("Przygotowywanie")
         self.settigns.game_settings.max_episodes_number = self.test_settings_ui.spinBox.value()
         self.settigns.agent_settings.is_LSTM = self.test_settings_ui.checkBox.isChecked()
         if self.test_settings_ui.saved_agent_radio.isChecked():
